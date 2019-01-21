@@ -20,14 +20,14 @@ Ray tracing with Physically Based Rendering
     | Parameter  | Value      |
     | ---------- | ---------- |
     | position   | (-3.413, 1.326, -9.88)  |
-    | radius     | 1          |
+    | radius     | 0.5        |
 
 3. **Sphere (Metal)**
 
     | Parameter  | Value      |
     | ---------- | ---------- |
     | position   | (-2.628, 0.949, -8.732)  |
-    | radius     | 1          |
+    | radius     | 0.5        |
 
 #### Camera
 
