@@ -43,3 +43,7 @@ Ray tracing with Physically Based Rendering
 | ---------- | ----------------- |
 | type       | directional light |
 | direction  | (40, 15, 0)       |
+
+
+## Author
+Jietong Chen
