@@ -44,6 +44,8 @@ Ray tracing with Physically Based Rendering
 | type       | directional light |
 | direction  | (40, 15, 0)       |
 
+###### Note
+> Every value above are in left-hand coordinate system.
 
 ## Author
 Jietong Chen
