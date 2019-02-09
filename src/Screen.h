@@ -1,24 +1,45 @@
 //
 // Screen.h
 //
+// Access to display information.
+//
 // Created by Jietong Chen on 2/4/2019.
 //
 
 #ifndef SCREEN_H
 #define SCREEN_H
 
-class Screen {
-public:
-    static void SetResolution( int w, int h );
+#include "pch.h"
 
-private:
-    static int _width;
-    static int _height;
+namespace RayTracing {
+    /**
+     * Access to display information.
+     */
+    class Screen {
+    public:
+        /**
+         * Switches the screen resolution.
+         *
+         * @param w the width
+         * @param h the height
+         */
+        static void SetResolution( int w, int h );
 
-public:
-    static const int& width = Screen::_width;
-    static const int& height = Screen::_height;
+    private:
+        /** width of the screen window in pixels */
+        static int _width;
 
-}; // Screen
+        /** height of the screen window in pixels */
+        static int _height;
+
+    public:
+        /** width of the screen window in pixels */
+        static const int& width;
+
+        /** height of the screen window in pixels */
+        static const int& height;
+
+    }; // Screen
+} // RayTracing
 
 #endif // SCREEN_H

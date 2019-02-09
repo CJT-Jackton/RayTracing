@@ -4,4 +4,8 @@
 // Created by Jietong Chen on 1/31/2019.
 //
 
-#include "Light.h"
+#include "pch.h"
+//#include "Light.h"
+
+using RayTracing::Light;
+using RayTracing::GameObject;

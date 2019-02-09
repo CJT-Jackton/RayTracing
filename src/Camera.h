@@ -8,59 +8,62 @@
 #ifndef CAMERA_H
 #define CAMERA_H
 
-#include "GameObject.h"
-#include "Ray.h"
-#include "Texture.h"
-#include "RenderTexture.h"
+#include "pch.h"
+//#include "GameObject.h"
+//#include "Ray.h"
+//#include "Texture.h"
+//#include "RenderTexture.h"
 
-class Camera : public GameObject {
-public:
-    Camera();
+namespace RayTracing {
+    class Camera : public GameObject {
+    public:
+        Camera();
 
-    Camera( const Camera& other );
+        Camera( const Camera& other );
 
-    ~Camera() override;
+        ~Camera() override;
 
-    void Render();
+        void Render();
 
-    Ray ViewportPointToRay( float3 position ) const;
+        Ray ViewportPointToRay( float3 position ) const;
 
-    void ResetAspect();
+        void ResetAspect();
 
-    void ResetWorldToCameraMatrix();
+        void ResetWorldToCameraMatrix();
 
-    static std::vector< Camera* >& GetAllCameras();
+        static std::vector< Camera* >& GetAllCameras();
 
-public:
+    public:
 
-    float aspect;
+        float aspect;
 
-    float4 backgroundColor;
+        float4 backgroundColor;
 
-    float focalLength;
+        float focalLength;
 
-    float nearClipPlane;
+        float nearClipPlane;
 
-    float farClipPlane;
+        float farClipPlane;
 
-    float fieldOfView;
+        float fieldOfView;
 
-    int pixelWidth;
+        int pixelWidth;
 
-    int pixelHeight;
+        int pixelHeight;
 
-    float4x4 cameraToWorldMatrix;
+        float4x4 cameraToWorldMatrix;
 
-    float4x4 worldToCameraMatrix;
+        float4x4 worldToCameraMatrix;
 
-    RenderTexture targetTexture;
+        RenderTexture targetTexture;
 
-    static std::vector< Camera* > allCameras = {};
+        static std::vector< Camera* > allCameras;
 
-    static const int& allCamerasCount = allCameras.size();
+        static const unsigned int& allCamerasCount;
 
-    static Camera* main;
+        static Camera* main;
 
-};
+    };
+}
 
 #endif // CAMERA_H

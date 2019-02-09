@@ -1,35 +1,82 @@
 //
 // Primitive.h
 //
+// The base class of primitive. Primitve is the basic mesh element in the scene.
+//
 // Created by Jietong Chen on 1/31/2019.
 //
 
 #ifndef PRIMITIVE_H
 #define PRIMITIVE_H
 
-#include "Ray.h"
-#include "Mesh.h"
+#include "pch.h"
 
-class Primitive {
-public:
-    Primitive() = default;
+namespace RayTracing {
+    /**
+     * The base class of primitive.
+     */
+    class Primitive {
+    public:
+        /**
+         * Default constructor.
+         */
+        Primitive() = default;
 
-//    Primitive( const Primitive& other ) = 0;
+        /**
+         * Copy a Primitive from another Primitive.
+         *
+         * @param other the primitive to copy from
+         */
+        Primitive( const Primitive& other );
 
-    virtual ~Primitive() = default;
+        /**
+         * Default deconstructor.
+         */
+        virtual ~Primitive() = default;
 
-    Primitive( const Primitive& other );
+        /**
+         * Assignment is forbiden.
+         */
+        Primitive& operator=( const Primitive& other ) = delete;
 
-    virtual Primitive* Clone() const = 0;
+        virtual Primitive* Clone() const = 0;
 
-    virtual float Intersect( Ray ray ) const = 0;
+        /**
+         * Determine whether a ray intersect with the primitive.
+         *
+         * @param ray the ray
+         *
+         * @return the distance between the origin of the ray and the
+         *         intersection point if intersect, a negative number if
+         *         no intersection
+         */
+        virtual float Intersect( Ray ray ) const = 0;
 
-    virtual Primitive* ToWorldSpace( float4x4 localToWorldMatrix ) const = 0;
+        /**
+         * Convert the primitive into world space.
+         *
+         * @param localToWorldMatrix the local to world matrix
+         *
+         * @return a primitive copy in world space
+         */
+        virtual Primitive*
+        ToWorldSpace( float4x4 localToWorldMatrix ) const = 0;
 
-    virtual Primitive* ToCameraSpace( float4x4 worldToCameraMatrix ) const = 0;
+        /**
+         * Convert the primitive into camera space.
+         *
+         * @param worldToCameraMatrix the world to camera matrix
+         *
+         * @return a primitive copy in camera space
+         */
+        virtual Primitive*
+        ToCameraSpace( float4x4 worldToCameraMatrix ) const = 0;
 
-public:
-    const Mesh* mesh;
-};
+    public:
+        /** the mesh this primitive in */
+        const Mesh* mesh;
+
+    }; // Primitive
+} // RayTracing
 
 #endif // PRIMITIVE_H

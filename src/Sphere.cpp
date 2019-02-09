@@ -1,13 +1,18 @@
 //
 // Sphere.cpp
 //
+// The implementation of Sphere.
+//
 // Created by Jietong Chen on 1/31/2019.
 //
 
-#include "Sphere.h"
+#include "pch.h"
+
+using RayTracing::Sphere;
+using RayTracing::Ray;
 
 Sphere::Sphere() :
-        center{},
+        center{ 0, 0, 0 },
         radius{ 1 } {
 }
 
@@ -21,6 +26,15 @@ Sphere* Sphere::Clone() const {
     return new Sphere( *this );
 }
 
+/**
+ * Determine whether a ray intersect with the sphere.
+ *
+ * @param ray the ray
+ *
+ * @return the distance between the origin of the ray and the
+ *         intersection point if intersect, a negative number if
+ *         no intersection
+ */
 float Sphere::Intersect( Ray ray ) const {
     float B = 2.0f * ( ( ray.direction.x * ( ray.origin.x - center.x ) +
                          ray.direction.y * ( ray.origin.y - center.y ) +
@@ -45,23 +59,33 @@ float Sphere::Intersect( Ray ray ) const {
     }
 }
 
+/**
+ * Convert the sphere into world space.
+ *
+ * @param localToWorldMatrix the local to world matrix
+ *
+ * @return a sphere copy in world space
+ */
 Sphere* Sphere::ToWorldSpace( float4x4 localToWorldMatrix ) const {
     Sphere* sphere = new Sphere( *this );
 
-    /*float4 tmp = mul( float4( center.x, center.y, center.z, .0f ),
-                      localToWorldMatrix );*/
-    sphere->center = mul( float4( center.x, center.y, center.z, 0.0f ),
+    sphere->center = mul( float4( center.x, center.y, center.z, 1.0f ),
                           localToWorldMatrix ).xyz;
 
     return sphere;
 }
 
+/**
+ * Convert the sphere into camera space.
+ *
+ * @param worldToCameraMatrix the world to camera matrix
+ *
+ * @return a sphere copy in camera space
+ */
 Sphere* Sphere::ToCameraSpace( float4x4 worldToCameraMatrix ) const {
     Sphere* sphere = new Sphere( *this );
 
-    //float4 tmp = mul( float4( center.x, center.y, center.z, .0f ),
-    //                  worldToCameraMatrix );
-    sphere->center = mul( float4( center.x, center.y, center.z, 0.0f ),
+    sphere->center = mul( float4( center.x, center.y, center.z, 1.0f ),
                           worldToCameraMatrix ).xyz;
 
     return sphere;

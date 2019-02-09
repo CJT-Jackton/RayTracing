@@ -1,33 +1,49 @@
 //
 // Mesh.h
 //
+// Mesh class contain an array of primitive.
+//
 // Created by Jietong Chen on 1/31/2019.
 //
-
 
 #ifndef MESH_H
 #define MESH_H
 
-#include <vector>
+#include "pch.h"
 
-#include "Object.h"
-#include "Primitive.h"
-#include "Renderer.h"
+namespace RayTracing {
+    /**
+     * Mesh class contain an array of primitive.
+     */
+    class Mesh : public Object {
+    public:
+        /**
+         * Create a empty Mesh.
+         */
+        Mesh();
 
-class Mesh : public Object {
-public:
-    Mesh();
+        /**
+         * Add a primitive to the mesh.
+         *
+         * @param primitive the primitive
+         */
+        void AddPrimitive( std::unique_ptr< Primitive > primitive );
 
-    void AddPrimitive( Primitive&& primitive );
+        /**
+         * Get the array of primitive.
+         *
+         * @return the array of primitive
+         */
+        const std::vector< std::unique_ptr< Primitive > >&
+        GetPrimitives() const;
 
-    const std::vector< Primitive* >& GetPrimitives() const;
+    public:
+        /** the primitive of the mesh */
+        std::vector< std::unique_ptr< Primitive > > primitives;
 
-    std::vector< Primitive* > GetPrimitivesInWorldSpace() const;
-
-public:
-    std::vector< Primitive* > primitives;
-
-    Renderer* renderer;
-};
+        /** the renderer this mesh belong */
+        Renderer* renderer;
+    };
+} // RayTracing
 
 #endif // MESH_H

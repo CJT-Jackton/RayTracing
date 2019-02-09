@@ -1,35 +1,97 @@
 //
 // RenderTexture.h
 //
+// Texture that can be rendered to. RenderTexture is the target texture
+// property of a Camera, this will camera render into a texture.
+//
+// Currently only support RGBA32 format.
+//
 // Created by Jietong Chen on 2/2/2019.
 //
 
 #ifndef RENDERTEXTURE_H
 #define RENDERTEXTURE_H
 
-#include "Texture.h"
-#include "RenderBuffer.h"
+#include "pch.h"
 
-class RenderTexture : public Texture {
-public:
-    RenderTexture( int w, int h );
+namespace RayTracing {
+    /**
+     * Texture that can be rendered to.
+     */
+    class RenderTexture : public Texture {
+    public:
+        /**
+         * Create a RenderTexture with given size.
+         *
+         * @param w the width
+         * @param h the height
+         */
+        RenderTexture( int w, int h );
 
-    void WriteColorBuffer( int x, int y, int4 color );
+        /**
+         * Read the color buffer.
+         *
+         * @param x the x coordinate
+         * @param y the y coordinate
+         *
+         * @return the color
+         */
+        float4 ReadColorBuffer( int x, int y ) const;
 
-    void WriteDepthBuffer( int x, int y, float depth, int stencil );
+        /**
+         * Read the depth buffer.
+         *
+         * @param x the x coordinate
+         * @param y the y coordinate
+         *
+         * @return the depth
+         */
+        float ReadDepthBuffer( int x, int y ) const;
 
-    int4 ReadColorBuffer( int x, int y ) const;
+        /**
+         * Read the stencil buffer.
+         *
+         * @param x the x coordinate
+         * @param y the y coordinate
+         *
+         * @return the stencil value
+         */
+        int ReadStencilBuffer( int x, int y ) const;
 
-    float ReadDepthBuffer( int x, int y ) const;
+        /**
+         * Write the color buffer at given position.
+         *
+         * @param x the x coordinate
+         * @param y the y coordinate
+         * @param color the color
+         */
+        void WriteColorBuffer( int x, int y, float4 color );
 
-    int ReadStencilBuffer( int x, int y ) const;
+        /**
+         * Write the depth/stencil buffer at given position.
+         *
+         * @param x the x coordinate
+         * @param y the y coordinate
+         * @param depth the depth
+         * @param stencil the stencil
+         */
+        void WriteDepthBuffer( int x, int y, float depth, int stencil );
 
-    BTYE* GetNativeTexturePtr() const override;
+        /**
+         * Get the pointer to the texture native data.
+         *
+         * @return the pointer to the color buffer native data
+         */
+        BYTE* GetNativeTexturePtr() const override;
 
-public:
-    RenderBuffer colorBuffer;
-    RenderBuffer depthBuffer;
+    public:
+        /** color buffer */
+        RenderBuffer colorBuffer;
 
-}; // RenderTexture
+        /** depth/stencil buffer */
+        RenderBuffer depthBuffer;
+
+    }; // RenderTexture
+} // RayTracing
 
 #endif // RENDERTEXTURE_H

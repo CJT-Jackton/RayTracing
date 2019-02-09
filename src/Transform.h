@@ -1,84 +1,189 @@
 //
 // Transform.h
 //
+// Position, rotation and scale of an object.
+//
 // Created by Jietong Chen on 1/30/2019.
 //
 
 #ifndef TRANSFORM_H
 #define TRANSFORM_H
 
-#include <vector>
+#include "pch.h"
 
-#include "Object.h"
-#include "GameObject.h"
-
-class Transform : public Object {
-public:
-    Transform();
-
+namespace RayTracing {
     /**
-     * Copy construction is forbidden.
+     * Position, rotation and scale of an object.
      */
-    Transform( const Transform& other ) = delete;
+    class Transform : public Component {
+    public:
+        /**
+         * Create a Transform for a GameObject.
+         *
+         * @param gameObject the GameObject attach to
+         */
+        Transform( GameObject* gameObject );
 
-    /**
-     * Assignment is forbidden.
-     */
-    Transform& operator=( const Transform& other ) = delete;
+        /**
+         * Copy construction is forbidden.
+         */
+        Transform( const Transform& other );
 
-    ~Transform() override = default;
+        /**
+         * Assignment is forbidden.
+         */
+        Transform& operator=( const Transform& other );
 
-    void DetachChildren();
+        ~Transform() override = default;
 
-//    Transform Find( std::string name ) const;
+        /**
+         * Unparents all children.
+         */
+        void DetachChildren();
 
-    Transform* GetChild( uint32_t index ) const;
+        /**
+         * Returns a transform child by index.
+         *
+         * @param index the index of child
+         *
+         * @return the transform of child
+         */
+        Transform* GetChild( uint32_t index ) const;
 
-    bool isChildOf( Transform& parent ) const;
+        /**
+         * Determine whether this transform is child of parent.
+         *
+         * @param parent the parent transform
+         *
+         * @return true if this transform is child of parent, false if not
+         */
+        bool isChildOf( Transform& parent ) const;
 
-    void SetParent( Transform& parent );
+        /**
+         * Set the parent of the transform.
+         *
+         * @param parent the parent transform
+         */
+        void SetParent( Transform& parent );
 
-    void Translate( float3 translation );
+        /**
+         * Moves the transform in the direction and distance of translation.
+         *
+         * @param translation the translation vector
+         */
+        void Translate( float3 translation );
 
-    void Translate( float x, float y, float z );
+        /**
+         * Moves the transform in the direction and distance of translation.
+         *
+         * @param x move distance along x-axis
+         * @param y move distance along y-axis
+         * @param z move distance along z-axis
+         */
+        void Translate( float x, float y, float z );
 
-    std::vector< Transform* >::iterator begin();
+        /**
+         * Get interator pointing to the first child of the Transform.
+         *
+         * @return interator pointing to the first child of the Transform
+         */
+        std::vector< Transform* >::iterator begin();
 
-    std::vector< Transform* >::iterator end();
+        /**
+         * Get interator pointing to the past-the-end child of the Transform.
+         *
+         * @return interator pointing to the past-the-end child of the Transform
+         */
+        std::vector< Transform* >::iterator end();
 
-public:
-    const float3& positon;
-    const float3& rotation;
-    const float3& scale;
+    private:
+        /**
+         * Get the translate transform matrix.
+         *
+         * @return the translate transform matrix
+         */
+        float4x4 GetTranslateMatrix() const;
 
-    const float3& right;
-    const float3& up;
-    const float3& forward;
+        /**
+         * Get the scale transform matrix.
+         *
+         * @return the scale transform matrix
+         */
+        float4x4 GetScaleMatrix() const;
 
-    Transform* root;
-    int childCount;
+        /**
+         * Recalculate the local to world matrix.
+         */
+        void UpdateLocalToWorldMatrix();
 
-    const float4x4& localToWorldMatrix;
-    const float4x4& worldToLocalMatrix;
+        /**
+         * Recalculate the world to local matrix.
+         */
+        void UpdateWorldToLocalMatrix();
 
-private:
-    const GameObject* _gameObject;
+    public:
+        /** the root transform */
+        Transform* root;
 
-    std::vector< Transform* > _children;
+        /** the number of child */
+        unsigned int childCount;
 
-    Transform* _parent;
+        /** the position */
+        const float3& positon;
 
-    float3 _position;
-    float3 _rotation;
-    float3 _scale;
+        /** the rotation */
+        const float3& rotation;
 
-    float3 _right;
-    float3 _up;
-    float3 _forward;
+        /** the scale */
+        const float3& scale;
 
-    float4x4 _localToWorldMatrix;
-    float4x4 _worldToLocalMatrix;
+        /** the right vector in world space */
+        const float3& right;
 
-}; // Transform
+        /** the up vector in world space */
+        const float3& up;
+
+        /** the front vector in world space */
+        const float3& forward;
+
+        /** the local to world matrix */
+        const float4x4& localToWorldMatrix;
+
+        /** the world to local matrix */
+        const float4x4& worldToLocalMatrix;
+
+    private:
+        /** the children of this transform */
+        std::vector< Transform* > _children;
+
+        /** the parent transform */
+        Transform* _parent;
+
+        /** the position */
+        float3 _position;
+
+        /** the rotation */
+        float3 _rotation;
+
+        /** the scale */
+        float3 _scale;
+
+        /** the right vector in world space */
+        float3 _right;
+
+        /** the up vector in world space */
+        float3 _up;
+
+        /** the forward vector in world space */
+        float3 _forward;
+
+        /** the local to world matrix */
+        float4x4 _localToWorldMatrix;
+
+        /** the world to local matrix */
+        float4x4 _worldToLocalMatrix;
+
+    }; // Transform
+} // RayTracing
 
 #endif // TRANSFORM_H

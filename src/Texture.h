@@ -1,30 +1,45 @@
 //
 // Texture.h
 //
+// Base class for texture handling.
+//
 // Created by Jietong Chen on 1/31/2019.
 //
 
 #ifndef TEXTURE_H
 #define TEXTURE_H
 
-#include <hlsl++.h>
-#include <vector>
+#include "pch.h"
 
-#include "Object.h"
+namespace RayTracing {
+    /**
+     * Base class for texture handling.
+     */
+    class Texture : public Object {
+    public:
+        /**
+         * Create a Texture with given size.
+         *
+         * @param w the width
+         * @param h the height
+         */
+        Texture( int w, int h );
 
-typedef unsigned char BTYE;
+        /**
+         * Get the pointer to the texture native data.
+         *
+         * @return the pointer to the texture native data
+         */
+        virtual BYTE* GetNativeTexturePtr() const = 0;
 
-class Texture : public Object {
-public:
+    public:
+        /** width of the texture in pixels */
+        const int width;
 
-    Texture( int w, int h );
+        /** height of the texture in pixels */
+        const int height;
 
-    virtual BTYE* GetNativeTexturePtr() const = 0;
-
-public:
-
-    const int width;
-    const int height;
-};
+    }; // Texture
+} // RayTracing
 
 #endif // TEXTURE_H

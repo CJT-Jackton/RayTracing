@@ -1,32 +1,64 @@
 //
 // Scene.h
 //
+// The scene.
+//
 // Created by Jietong Chen on 1/30/2019.
 //
 
 #ifndef SCENE_H
 #define SCENE_H
 
-#include <vector>
+#include "pch.h"
 
-#include "GameObject.h"
+namespace RayTracing {
+    /**
+     * The scene.
+     */
+    class Scene {
+    public:
+        /**
+         * Create a empty scene.
+         */
+        Scene();
 
-class Scene {
-public:
-    Scene();
+        /**
+         * Create a empty scene with name.
+         *
+         * @param name the name
+         */
+        Scene( std::string name );
 
-    Scene( std::string name );
+        /**
+         * Destroy the scene.
+         */
+        ~Scene();
 
-    ~Scene();
+        /**
+         * Add a GameObject into the scene.
+         *
+         * @param gameObject the GameObject
+         */
+        void AddRootGameObject( GameObject* gameObject );
 
-    std::vector< GameObject* > GetRootGameObjects() const;
+        /**
+         * Get the all the GameObject at the root.
+         *
+         * @return the array of root GameObject
+         */
+        std::vector< GameObject* > GetRootGameObjects() const;
 
-private:
-    std::vector< GameObject* > rootGameObjects;
+    private:
+        /** the root GameObject */
+        std::vector< GameObject* > rootGameObjects;
 
-    int rootCount;
+        /** the number root GameObject */
+        const unsigned int& rootCount;
 
-    std::string name;
-}; // Scene
+        /** the name of the scene */
+        std::string name;
+
+    }; // Scene
+} // RayTracing
 
 #endif // SCENE_H

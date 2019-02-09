@@ -1,11 +1,21 @@
 //
 // Texture.cpp
 //
+// The implementation of Texture.
+//
 // Created by Jietong Chen on 1/31/2019.
 //
 
-#include "Texture.h"
+#include "pch.h"
 
+using RayTracing::Texture;
+
+/**
+ * Create a Texture with given size.
+ *
+ * @param w the width
+ * @param h the height
+ */
 Texture::Texture( int w, int h ) :
         width{ w },
         height{ h } {

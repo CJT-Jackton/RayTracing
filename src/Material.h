@@ -1,20 +1,29 @@
 //
 // Material.h
 //
+// The material class.
+//
 // Created by Jietong Chen on 1/30/2019.
 //
 
 #ifndef MATERIAL_H
 #define MATERIAL_H
 
-#include "Object.h"
+namespace RayTracing {
+    /**
+     * The material class.
+     */
+    class Material : public Object {
+    public:
+        /**
+         * Create a Material.
+         */
+        Material();
 
-class Material : public Object {
-public:
-    Material();
-
-public:
-    float4 color;
-}; // Material
+    public:
+        /** the color */
+        float4 color;
+    }; // Material
+} // RayTracing
 
 #endif // MATERIAL_H

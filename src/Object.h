@@ -1,83 +1,110 @@
 //
 // Object.h
 //
+// The base class of all object.
+//
 // Created by Jietong Chen on 1/30/2019.
 //
 
 #ifndef OBJECT_H
 #define OBJECT_H
 
-#include <hlsl++.h>
-#include <string>
+#include "pch.h"
 
 using namespace hlslpp;
 
-/**
- * The base class of all object.
- */
-class Object {
-public:
+namespace RayTracing {
     /**
-     * Create an object.
+     * The base class of all object.
      */
-    Object();
+    class Object {
+    public:
+        /**
+         * Create an Object.
+         */
+        Object();
 
-    Object( std::string name );
+        /**
+         * Create an Object with name.
+         *
+         * @param name the name
+         */
+        Object( std::string name );
 
-    /**
-     * Object deconstructor is default.
-     */
-    virtual ~Object() = default;
+        /**
+         * Copy from another Object.
+         *
+         * @param other the Object to copy from
+         */
+        Object( const Object& other );
 
-    /**
-     * Get the id of the object.
-     *
-     * @return the id of the object
-     */
-    int GetID() const;
+        /**
+         * Assign the Object with an other Object.
+         *
+         * @param other the Object to assign
+         *
+         * @return this Object
+         */
+        Object& operator=( const Object& other );
 
-    std::string ToString() const;
+        /**
+         * Object deconstructor is default.
+         */
+        virtual ~Object() = default;
 
-    /**
-     * Determine whether the object exist or not.
-     *
-     * @return true if the object exist
-     */
-    operator bool() const;
+        /**
+         * Get the id of the object.
+         *
+         * @return the id of the Object
+         */
+        int GetID() const;
 
-    /**
-     * Compare two objects. Return true if two objects are indentical, false
-     * if not.
-     *
-     * @param a the firts object
-     * @param b the second object
-     *
-     * @return true if two objects are the same, false if not
-     */
-    bool operator==( const Object& other ) const;
+        /**
+         * Convert the Object into string format.
+         *
+         * @return the string representation of the Object
+         */
+        std::string ToString() const;
 
-    /**
-     * Compare two objects. Return true if two objects are different, false
-     * if not.
-     *
-     * @param a the first object
-     * @param b the second object
-     *
-     * @return true if two objects are different, false if not
-     */
-    bool operator!=( const Object& other ) const;
+        /**
+         * Determine whether the Object exist or not.
+         *
+         * @return true if the object exist
+         */
+        virtual operator bool() const;
 
-protected:
-    /** the name of the object */
-    std::string name;
+        /**
+         * Compare with another Object. Return true if two Objects are
+         * indentical, false if not.
+         *
+         * @param other the Object to compare with
+         *
+         * @return true if two Objects are the same Object, false if not
+         */
+        bool operator==( const Object& other ) const;
 
-    /** the id of the object */
-    const int id;
+        /**
+         * Compare with another Object. Return true if two Objects are
+         * different, false if not.
+         *
+         * @param other the Object to compare with
+         *
+         * @return true if two Objects are different Objects, false if not
+        */
+        bool operator!=( const Object& other ) const;
 
-private:
-    /** id */
-    static int NEXT_ID;
+    protected:
+        /** the name of the Object */
+        std::string name;
 
-}; // Object
+        /** the id of the Object */
+        const int id;
+
+    private:
+        /** id of next created Object */
+        static int NEXT_ID;
+
+    }; // Object
+} // RayTracing
 
 #endif // OBJECT_H
