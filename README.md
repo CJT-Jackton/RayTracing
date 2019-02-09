@@ -1,5 +1,13 @@
 # Ray Tracing Assigment
-Ray tracing with Physically Based Rendering
+Ray tracing with Physically Based Rendering.
+
+## Requirements
+
+C++14 or higher. Tested on MSVC v141, no tested on other comilper yet. 
+
+- [hlsl++](https://github.com/redorav/hlslpp)    Vector, Matrix library provided a HLSL like syntax.
+- [libpng](http://www.libpng.org/pub/png/libpng.html)    Library to handle .PNG file.
+- [png++](https://www.nongnu.org/pngpp/)   C++ wrapper for libpng library.
 
 ## Scene
 
