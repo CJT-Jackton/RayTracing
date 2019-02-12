@@ -55,5 +55,15 @@ C++14 or higher. Tested on MSVC v141, no tested on other comilper yet.
 ###### Note
 > Every value above are in left-hand coordinate system.
 
+## Color
+
+![color buffer](https://raw.githubusercontent.com/CJT-Jackton/RayTracing/master/Screenshots/Checkpoint2.png "Color buffer")
+    *Color Buffer of the Scene*
+    
+The color buffer above doesn't represent the actual color of the object, instead it just for distinguish different object in the scene.
+
+![depth buffer](https://raw.githubusercontent.com/CJT-Jackton/RayTracing/master/Screenshots/RayTracingScene_depth.png "Depth buffer")
+    *Depth Buffer of the Scene*
+
 ## Author
 Jietong Chen
