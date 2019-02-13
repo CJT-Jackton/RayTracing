@@ -64,6 +64,15 @@ The color buffer above doesn't represent the actual color of the object, instead
 
 ![depth buffer](https://raw.githubusercontent.com/CJT-Jackton/RayTracing/master/Screenshots/RayTracingScene_depth.png "Depth buffer")
     *Depth Buffer of the Scene*
+    
+### Extra
+
+![cube](https://raw.githubusercontent.com/CJT-Jackton/RayTracing/master/Screenshots/Checkpoint2_extra1.png "Cube")
+    *Cube primitive*
+    
+![another camera angle](https://raw.githubusercontent.com/CJT-Jackton/RayTracing/master/Screenshots/Checkpoint2_extra2.png "Another Camera Angle")
+    *Scene Rendered From Another Camera*
+
 
 ## Author
 Jietong Chen
