@@ -181,3 +181,12 @@ void GameObject::MoveToScene( Scene& scene ) {
         _scene->AddRootGameObject( this );
     }
 }
+
+/**
+ * Determine whether the GameObject is active.
+ *
+ * @return true if the GameObject is active, false if not
+ */
+GameObject::operator bool() const {
+    return active;
+}

@@ -11,22 +11,44 @@
 
 #define _USE_MATH_DEFINES
 
+#define DEFAULT_SCREEN_WIDTH 800
+#define DEFAULT_SCREEN_HEIGHT 600
+
+#define MULTI_THREAD true
+
 #include <hlsl++.h>
 #include <algorithm>
 #include <cmath>
 #include <iostream>
+#include <iterator>
+#include <sstream>
 #include <string>
 #include <memory>
+#include <mutex>
 #include <vector>
 //#include <png.h>
 #include <png.hpp>
 
-#define DEFAULT_SCREEN_WIDTH 800
-#define DEFAULT_SCREEN_HEIGHT 600
+#if MULTI_THREAD
+
+#include <thread>
+
+#endif
 
 namespace RayTracing {
+
+    extern int THREAD_NUMBER;
+
     typedef unsigned char BYTE;
     typedef unsigned int png_uint_32;
+
+    /**
+     * Union of float and 4-byte.
+     */
+    union floatBYTE {
+        float f;
+        BYTE byte[4];
+    };
 
     class Camera;
 

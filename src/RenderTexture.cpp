@@ -10,14 +10,9 @@
 
 using RayTracing::RenderTexture;
 using RayTracing::BYTE;
+using RayTracing::floatBYTE;
 
-/**
- * Union of float and 4-byte.
- */
-union floatBYTE {
-    float f;
-    BYTE byte[4];
-};
+std::mutex write_mutex;
 
 /**
  * Create a RenderTexture with given size.
@@ -111,6 +106,9 @@ int RenderTexture::ReadStencilBuffer( int x, int y ) const {
  */
 void RenderTexture::WriteColorBuffer( int x, int y, float4 color ) {
     if( x >= 0 && x < width && y >= 0 && y < height ) {
+//#if MULTI_THREAD
+//        std::lock_guard< std::mutex > lock_guard{ write_mutex };
+//#endif
         BYTE* colorBufferData = colorBuffer.GetNativeRenderBufferPtr();
 
         int r = ( color.r * 256 == 256 ) ? 255 : color.r * 256;
@@ -136,6 +134,9 @@ void RenderTexture::WriteColorBuffer( int x, int y, float4 color ) {
 void RenderTexture::WriteDepthBuffer( int x, int y, float depth,
                                       int stencil ) {
     if( x >= 0 && x < width && y >= 0 && y < height ) {
+//#if MULTI_THREAD
+//        std::lock_guard< std::mutex > lock_guard{ write_mutex };
+//#endif
         BYTE* depthBufferData = depthBuffer.GetNativeRenderBufferPtr();
 
         floatBYTE d{ depth };
@@ -143,8 +144,8 @@ void RenderTexture::WriteDepthBuffer( int x, int y, float depth,
         depthBufferData[ 4 * ( y * width + x ) + 0 ] = d.byte[ 0 ];
         depthBufferData[ 4 * ( y * width + x ) + 1 ] = d.byte[ 1 ];
         depthBufferData[ 4 * ( y * width + x ) + 2 ] = d.byte[ 2 ];
-
-        depthBufferData[ 4 * ( y * width + x ) + 3 ] = stencil;
+        depthBufferData[ 4 * ( y * width + x ) + 3 ] = d.byte[ 3 ];
+        //depthBufferData[ 4 * ( y * width + x ) + 3 ] = ( BYTE ) stencil;
     }
 }
 

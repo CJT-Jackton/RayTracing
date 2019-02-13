@@ -19,7 +19,7 @@ using RayTracing::GameObject;
 Transform::Transform( GameObject* gameObject ) :
         Component{ gameObject, "Transform" },
         positon{ _position },
-        rotation{ _rotation },
+        rotation{ _euler },
         scale{ _scale },
         right{ _right },
         up{ _up },
@@ -30,7 +30,8 @@ Transform::Transform( GameObject* gameObject ) :
         _children{},
         _parent{},
         _position{ 0, 0, 0 },
-        _rotation{ 0, 0, 0 },
+        _euler{ 0, 0, 0 },
+        _rotation{ euler( float3( 0, 0, 0 ) ) },
         _scale{ 1, 1, 1 },
         _right{ 1, 0, 0 },
         _up{ 0, 1, 0 },
@@ -45,7 +46,7 @@ Transform::Transform( GameObject* gameObject ) :
 Transform::Transform( const Transform& other ) :
         Component{ other.gameObject, "Transform" },
         positon{ _position },
-        rotation{ _rotation },
+        rotation{ _euler },
         scale{ _scale },
         right{ _right },
         up{ _up },
@@ -55,6 +56,7 @@ Transform::Transform( const Transform& other ) :
         _children{ other._children },
         _parent{ other._parent },
         _position{ other._position },
+        _euler{ other._euler },
         _rotation{ other._rotation },
         _scale{ other._scale },
         _right{ other._right },
@@ -147,6 +149,39 @@ void Transform::Translate( float x, float y, float z ) {
 }
 
 /**
+ * Rotate the transform with given euler angles degrees around the
+ * x axis, y axis, z axis (in that order).
+ *
+ * @param eulers euler angles of rotation
+ */
+void Transform::Rotate( float3 eulers ) {
+    _euler = eulers;
+    _rotation = euler( _euler * 3.14159265f / 180.0f );
+
+    // recalculate the model matrix
+    UpdateLocalToWorldMatrix();
+    UpdateWorldToLocalMatrix();
+
+    // recalculate the right, up, front vector of the transform
+    float4x4 m = transpose( inverse( GetRotationMatrix() ) );
+    _right = mul( m, float4( _right, 1.0f ) ).xyz;
+    _up = mul( m, float4( _up, 1.0f ) ).xyz;
+    _forward = mul( m, float4( _forward, 1.0f ) ).xyz;
+}
+
+/**
+ * Rotate the transform with given euler angles degree around the
+ * x axis, y axis, z axis (in that order).
+ *
+ * @param xAngle degrees to rotate around the x axis
+ * @param yAngle degrees to rotate around the y axis
+ * @param zAngle degrees to rotate around the z axis
+ */
+void Transform::Rotate( float xAngle, float yAngle, float zAngle ) {
+    Rotate( float3( xAngle, yAngle, zAngle ) );
+}
+
+/**
  * Get interator pointing to the first child of the Transform.
  *
  * @return interator pointing to the first child of the Transform
@@ -171,11 +206,42 @@ std::vector< Transform* >::iterator Transform::end() {
  */
 float4x4 Transform::GetTranslateMatrix() const {
     return float4x4(
-            1, 0, 0, 0,
-            0, 1, 0, 0,
-            0, 0, 1, 0,
-            _position.x, _position.y, _position.z, 1
+            1, 0, 0, _position.x,
+            0, 1, 0, _position.y,
+            0, 0, 1, _position.z,
+            0, 0, 0, 1
     );
+}
+
+/**
+ * Get the rotation transform matrix.
+ *
+ * @return the rotation transform matrix
+ */
+float4x4 Transform::GetRotationMatrix() const {
+    // convert euler angles from degrees to radians
+    float3 rad = _euler * 3.14159265f / 180.0f;
+
+    float4x4 rotationAroundX( 1, 0, 0, 0,
+                              0, cosf( rad.x ), -sinf( rad.x ), 0,
+                              0, sinf( rad.x ), cosf( rad.x ), 0,
+                              0, 0, 0, 1
+    );
+
+    float4x4 rotationAroundY( cosf( rad.y ), 0, sinf( rad.y ), 0,
+                              0, 1, 0, 0,
+                              -sinf( rad.y ), 0, cosf( rad.y ), 0,
+                              0, 0, 0, 1
+    );
+
+    float4x4 rotationAroundZ( cosf( rad.z ), -sinf( rad.z ), 0, 0,
+                              sinf( rad.z ), cosf( rad.z ), 0, 0,
+                              0, 0, 1, 0,
+                              0, 0, 0, 1
+    );
+
+    // apply the rotation in x, y, z order
+    return mul( rotationAroundZ, mul( rotationAroundX, rotationAroundY ) );
 }
 
 /**
@@ -197,7 +263,7 @@ float4x4 Transform::GetScaleMatrix() const {
  */
 void Transform::UpdateLocalToWorldMatrix() {
     _localToWorldMatrix = GetScaleMatrix();
-    _localToWorldMatrix = mul( GetTranslateMatrix(), _localToWorldMatrix );
+    _localToWorldMatrix = mul( GetRotationMatrix(), GetTranslateMatrix() );
 
     if( root ) {
         _localToWorldMatrix = mul( _localToWorldMatrix,

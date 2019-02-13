@@ -27,15 +27,24 @@ namespace RayTracing {
 
         Ray ViewportPointToRay( float3 position ) const;
 
+        void Reset();
+
         void ResetAspect();
 
         void ResetWorldToCameraMatrix();
 
         static std::vector< Camera* >& GetAllCameras();
 
+    protected:
+        void RenderPixel( int x, int y,
+                          std::vector< Primitive* >& primitives );
+
+        void RenderBlock( int start, int end,
+                          std::vector< Primitive* >& primitives );
+
     public:
 
-        float aspect;
+        const float& aspect;
 
         float4 backgroundColor;
 
@@ -47,13 +56,13 @@ namespace RayTracing {
 
         float fieldOfView;
 
-        int pixelWidth;
+        const int& pixelWidth;
 
-        int pixelHeight;
+        const int& pixelHeight;
 
-        float4x4 cameraToWorldMatrix;
+        const float4x4& cameraToWorldMatrix;
 
-        float4x4 worldToCameraMatrix;
+        const float4x4& worldToCameraMatrix;
 
         RenderTexture targetTexture;
 
@@ -62,6 +71,25 @@ namespace RayTracing {
         static const unsigned int& allCamerasCount;
 
         static Camera* main;
+
+    protected:
+        float _aspect;
+
+        int _pixelWidth;
+
+        int _pixelHeight;
+
+        float filmPlaneHeight;
+
+        float filmPlaneWidth;
+
+        float pixelUnitWidth;
+
+        float pixelUnitHeight;
+
+        float4x4 _cameraToWorldMatrix;
+
+        float4x4 _worldToCameraMatrix;
 
     };
 }

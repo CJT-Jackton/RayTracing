@@ -83,6 +83,24 @@ namespace RayTracing {
         void Translate( float x, float y, float z );
 
         /**
+         * Rotate the transform with given euler angles degrees around the
+         * x axis, y axis, z axis (in that order).
+         *
+         * @param eulers euler angles of rotation
+         */
+        void Rotate( float3 eulers );
+
+        /**
+         * Rotate the transform with given euler angles degree around the
+         * x axis, y axis, z axis (in that order).
+         *
+         * @param xAngle degrees to rotate around the x axis
+         * @param yAngle degrees to rotate around the y axis
+         * @param zAngle degrees to rotate around the z axis
+         */
+        void Rotate( float xAngle, float yAngle, float zAngle );
+
+        /**
          * Get interator pointing to the first child of the Transform.
          *
          * @return interator pointing to the first child of the Transform
@@ -103,6 +121,13 @@ namespace RayTracing {
          * @return the translate transform matrix
          */
         float4x4 GetTranslateMatrix() const;
+
+        /**
+         * Get the rotation transform matrix.
+         *
+         * @return the rotation transform matrix
+         */
+        float4x4 GetRotationMatrix() const;
 
         /**
          * Get the scale transform matrix.
@@ -162,8 +187,11 @@ namespace RayTracing {
         /** the position */
         float3 _position;
 
-        /** the rotation */
-        float3 _rotation;
+        /** the rotation in euler angles */
+        float3 _euler;
+
+        /** the rotation in quaternion */
+        quaternion _rotation;
 
         /** the scale */
         float3 _scale;

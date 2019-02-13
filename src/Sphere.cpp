@@ -69,8 +69,8 @@ float Sphere::Intersect( Ray ray ) const {
 Sphere* Sphere::ToWorldSpace( float4x4 localToWorldMatrix ) const {
     Sphere* sphere = new Sphere( *this );
 
-    sphere->center = mul( float4( center.x, center.y, center.z, 1.0f ),
-                          localToWorldMatrix ).xyz;
+    sphere->center = mul( localToWorldMatrix,
+                          float4( center.x, center.y, center.z, 1.0f ) ).xyz;
 
     return sphere;
 }
@@ -85,8 +85,8 @@ Sphere* Sphere::ToWorldSpace( float4x4 localToWorldMatrix ) const {
 Sphere* Sphere::ToCameraSpace( float4x4 worldToCameraMatrix ) const {
     Sphere* sphere = new Sphere( *this );
 
-    sphere->center = mul( float4( center.x, center.y, center.z, 1.0f ),
-                          worldToCameraMatrix ).xyz;
+    sphere->center = mul( worldToCameraMatrix,
+                          float4( center.x, center.y, center.z, 1.0f ) ).xyz;
 
     return sphere;
 }

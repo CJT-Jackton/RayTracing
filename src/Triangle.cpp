@@ -74,9 +74,10 @@ Triangle* Triangle::ToWorldSpace( float4x4 localToWorldMatrix ) const {
     Triangle* triangle = new Triangle( *this );
 
     for( int i = 0; i < 3; ++i ) {
-        triangle->vertices[ i ] = mul(
-                float4( vertices[ i ].x, vertices[ i ].y, vertices[ i ].z,
-                        1.0f ), localToWorldMatrix ).xyz;
+        triangle->vertices[ i ] = mul( localToWorldMatrix,
+                                       float4( vertices[ i ].x, vertices[ i ].y,
+                                               vertices[ i ].z,
+                                               1.0f ) ).xyz;
     }
 
     return triangle;
@@ -96,7 +97,7 @@ Triangle* Triangle::ToCameraSpace( float4x4 worldToCameraMatrix ) const {
         float4 tmp = float4( vertices[ i ].x, vertices[ i ].y, vertices[ i ].z,
                              1.0f );
 
-        triangle->vertices[ i ] = mul( tmp, worldToCameraMatrix ).xyz;
+        triangle->vertices[ i ] = mul( worldToCameraMatrix, tmp ).xyz;
     }
 
     return triangle;

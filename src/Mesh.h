@@ -37,6 +37,8 @@ namespace RayTracing {
         const std::vector< std::unique_ptr< Primitive > >&
         GetPrimitives() const;
 
+        bool ReadOBJ( const std::string& filename );
+
     public:
         /** the primitive of the mesh */
         std::vector< std::unique_ptr< Primitive > > primitives;

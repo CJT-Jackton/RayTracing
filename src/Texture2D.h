@@ -18,12 +18,23 @@ namespace RayTracing {
     class Texture2D : public Texture {
     public:
         /**
+         * The format of the pixel data in the texture.
+         */
+        enum TextureFormat {
+            RGB24,
+            RGBA32,
+            RFloat
+        };
+
+        /**
          * Create a Texture2D with given size.
          *
          * @param w the width
          * @param h the height
+         * @param textureFormat the format of the pixel data in the texture
          */
-        Texture2D( int w, int h );
+        Texture2D( int w, int h,
+                   TextureFormat textureFormat = TextureFormat::RGBA32 );
 
         /**
          * Get the pixel value at given position.
@@ -73,6 +84,9 @@ namespace RayTracing {
          * @return the pointer to the texture native data
          */
         BYTE* GetNativeTexturePtr() const override;
+
+    public:
+        const TextureFormat format;
 
     private:
         /** the texture data */

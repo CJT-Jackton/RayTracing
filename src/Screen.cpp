@@ -10,8 +10,8 @@
 
 using RayTracing::Screen;
 
-int Screen::_width = 800;
-int Screen::_height = 600;
+int Screen::_width = DEFAULT_SCREEN_WIDTH;
+int Screen::_height = DEFAULT_SCREEN_HEIGHT;
 
 const int& Screen::width = Screen::_width;
 const int& Screen::height = Screen::_height;

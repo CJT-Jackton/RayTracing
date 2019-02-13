@@ -10,15 +10,18 @@
 
 using RayTracing::Texture2D;
 using RayTracing::BYTE;
+using RayTracing::floatBYTE;
 
 /**
  * Create a Texture2D with given size.
  *
  * @param w the width
  * @param h the height
+ * @param textureFormat the format of the pixel data in the texture
  */
-Texture2D::Texture2D( int w, int h ) :
+Texture2D::Texture2D( int w, int h, TextureFormat textureFormat ) :
         Texture{ w, h },
+        format{ textureFormat },
         rawData( w * h * 4, 0 ) {
 }
 
@@ -150,18 +153,38 @@ void Texture2D::SaveTextureToPNG( std::string filename ) const {
 //    } catch( std::runtime_error const& error ) {
 //        std::cerr << "Error: " << error.what() << std::endl;
 //    }
+    png::image< png::basic_rgba_pixel< BYTE > > image(
+            ( unsigned int ) width,
+            ( unsigned int ) height );
 
-    png::image< png::basic_rgba_pixel< BYTE > > image( ( unsigned int ) width,
-                                                       ( unsigned int ) height );
+    if( format == TextureFormat::RGBA32 ) {
+        for( int y = 0; y < height; ++y ) {
+            for( int x = 0; x < width; ++x ) {
+                image[ y ][ x ] = png::basic_rgba_pixel(
+                        rawData[ ( y * width + x ) * 4 + 0 ],
+                        rawData[ ( y * width + x ) * 4 + 1 ],
+                        rawData[ ( y * width + x ) * 4 + 2 ],
+                        rawData[ ( y * width + x ) * 4 + 3 ]
+                );
+            }
+        }
+    } else if( format == TextureFormat::RFloat ) {
+        for( int y = 0; y < height; ++y ) {
+            for( int x = 0; x < width; ++x ) {
+                floatBYTE d{};
 
-    for( int y = 0; y < height; ++y ) {
-        for( int x = 0; x < width; ++x ) {
-            image[ y ][ x ] = png::basic_rgba_pixel(
-                    rawData[ ( y * width + x ) * 4 + 0 ],
-                    rawData[ ( y * width + x ) * 4 + 1 ],
-                    rawData[ ( y * width + x ) * 4 + 2 ],
-                    rawData[ ( y * width + x ) * 4 + 3 ]
-            );
+                d.byte[ 0 ] = rawData[ ( y * width + x ) * 4 + 0 ];
+                d.byte[ 1 ] = rawData[ ( y * width + x ) * 4 + 1 ];
+                d.byte[ 2 ] = rawData[ ( y * width + x ) * 4 + 2 ];
+                d.byte[ 3 ] = rawData[ ( y * width + x ) * 4 + 3 ];
+
+                float depth = d.f;
+                depth *= 256;
+                BYTE color = ( BYTE ) ( depth == 256 ? 255 : depth );
+
+                image[ y ][ x ] = png::basic_rgba_pixel(
+                        color, color, color, ( BYTE ) 255 );
+            }
         }
     }
 

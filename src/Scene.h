@@ -55,8 +55,9 @@ namespace RayTracing {
         /** the number root GameObject */
         const unsigned int& rootCount;
 
+    public:
         /** the name of the scene */
-        std::string name;
+        const std::string name;
 
     }; // Scene
 } // RayTracing

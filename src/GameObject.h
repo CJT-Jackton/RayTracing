@@ -85,6 +85,13 @@ namespace RayTracing {
          */
         void MoveToScene( Scene& scene );
 
+        /**
+         * Determine whether the GameObject is active.
+         *
+         * @return true if the GameObject is active, false if not
+         */
+        operator bool() const override;
+
     protected:
         /** the transform of the GameObject */
         Transform* _transform;
