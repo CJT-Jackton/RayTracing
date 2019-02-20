@@ -8,8 +8,8 @@
 
 #include "pch.h"
 
-using RayTracing::Scene;
-using RayTracing::GameObject;
+using RayTracer::Scene;
+using RayTracer::GameObject;
 
 /**
  * Create a empty scene.

@@ -11,7 +11,7 @@
 
 #include "pch.h"
 
-namespace RayTracing {
+namespace RayTracer {
     /**
      * Component of a GameObject that render the mesh.
      */
@@ -43,14 +43,14 @@ namespace RayTracing {
          *
          * @return the material assigned to the Renderer
          */
-        Material* GetMaterial() const;
+        std::shared_ptr< Material > GetMaterial() const;
 
         /**
          * Get the Mesh assigned to the Renderer.
          *
          * @return the Mesh assigned to the Renderer
          */
-        Mesh* GetMesh() const;
+        std::shared_ptr< Mesh > GetMesh() const;
 
         /**
          *
@@ -78,10 +78,10 @@ namespace RayTracing {
         bool enabled;
 
         /** the material assigned */
-        Material* material;
+        std::shared_ptr< Material > material;
 
         /** the mesh assigned */
-        Mesh* mesh;
+        std::shared_ptr< Mesh > mesh;
 
         /** the local to world matrix */
         const float4x4& localToWorldMatrix;
@@ -90,6 +90,6 @@ namespace RayTracing {
         const float4x4& worldToLocalMatrix;
 
     }; // Renderer
-} // RayTracing
+} // RayTracer
 
 #endif // RENDERER_H

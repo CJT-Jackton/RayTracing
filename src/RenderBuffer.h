@@ -12,7 +12,7 @@
 
 #include "pch.h"
 
-namespace RayTracing {
+namespace RayTracer {
     /**
      * The color or depth buffer of a RenderTexture.
      */
@@ -50,6 +50,6 @@ namespace RayTracing {
         std::vector< BYTE > buffer;
 
     }; // RenderBuffer
-} // RayTracing
+} // RayTracer
 
 #endif // RENDERBUFFER_H

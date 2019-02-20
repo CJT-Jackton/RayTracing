@@ -8,9 +8,9 @@
 
 #include "pch.h"
 
-using RayTracing::RenderTexture;
-using RayTracing::BYTE;
-using RayTracing::floatBYTE;
+using RayTracer::RenderTexture;
+using RayTracer::BYTE;
+using RayTracer::floatBYTE;
 
 std::mutex write_mutex;
 
@@ -24,6 +24,15 @@ RenderTexture::RenderTexture( int w, int h ) :
         Texture{ w, h },
         colorBuffer{ w * h * 4, 0 },
         depthBuffer{ w * h * 4, 0 } {
+}
+
+float4 RenderTexture::GetColor( float u, float v ) const {
+    int x, y;
+
+    x = ( int ) ( u * width );
+    y = ( int ) ( v * height );
+
+    return ReadColorBuffer( x, y );
 }
 
 /**
@@ -109,12 +118,16 @@ void RenderTexture::WriteColorBuffer( int x, int y, float4 color ) {
 //#if MULTI_THREAD
 //        std::lock_guard< std::mutex > lock_guard{ write_mutex };
 //#endif
+
+        float4 c = float4( ACESFilm( color.rgb ), 1.0f );
+//        float4 c = color;
+
         BYTE* colorBufferData = colorBuffer.GetNativeRenderBufferPtr();
 
-        int r = ( color.r * 256 == 256 ) ? 255 : color.r * 256;
-        int g = ( color.g * 256 == 256 ) ? 255 : color.g * 256;
-        int b = ( color.b * 256 == 256 ) ? 255 : color.b * 256;
-        int a = ( color.a * 256 == 256 ) ? 255 : color.a * 256;
+        int r = ( c.r * 256 == 256 ) ? 255 : c.r * 256;
+        int g = ( c.g * 256 == 256 ) ? 255 : c.g * 256;
+        int b = ( c.b * 256 == 256 ) ? 255 : c.b * 256;
+        int a = ( c.a * 256 == 256 ) ? 255 : c.a * 256;
 
         colorBufferData[ 4 * ( y * width + x ) + 0 ] = ( BYTE ) r;
         colorBufferData[ 4 * ( y * width + x ) + 1 ] = ( BYTE ) g;
@@ -156,4 +169,13 @@ void RenderTexture::WriteDepthBuffer( int x, int y, float depth,
  */
 BYTE* RenderTexture::GetNativeTexturePtr() const {
     return colorBuffer.GetNativeRenderBufferPtr();
+}
+
+float3 RenderTexture::ACESFilm( float3 x ) {
+    float a = 2.51f;
+    float b = 0.03f;
+    float c = 2.43f;
+    float d = 0.59f;
+    float e = 0.14f;
+    return saturate( ( x * ( a * x + b ) ) / ( x * ( c * x + d ) + e ) );
 }

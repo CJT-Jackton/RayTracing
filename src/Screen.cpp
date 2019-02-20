@@ -8,7 +8,7 @@
 
 #include "pch.h"
 
-using RayTracing::Screen;
+using RayTracer::Screen;
 
 int Screen::_width = DEFAULT_SCREEN_WIDTH;
 int Screen::_height = DEFAULT_SCREEN_HEIGHT;

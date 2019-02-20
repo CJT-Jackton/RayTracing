@@ -8,12 +8,12 @@
 
 #include "pch.h"
 
-using RayTracing::Renderer;
-using RayTracing::GameObject;
-using RayTracing::Component;
-using RayTracing::Material;
-using RayTracing::Mesh;
-using RayTracing::Primitive;
+using RayTracer::Renderer;
+using RayTracer::GameObject;
+using RayTracer::Component;
+using RayTracer::Material;
+using RayTracer::Mesh;
+using RayTracer::Primitive;
 
 /**
  * Create a Renderer attached to a GameObject.
@@ -23,8 +23,8 @@ using RayTracing::Primitive;
 Renderer::Renderer( GameObject* gameObject ) :
         Component( gameObject, "Renderer" ),
         enabled{ true },
-        material{ new Material() },
-        mesh{},
+        material{ nullptr },
+        mesh{ nullptr },
         _localToWorldMatrix{},
         _worldToLocalMatrix{},
         localToWorldMatrix{ _localToWorldMatrix },
@@ -59,18 +59,13 @@ Renderer::Renderer( const Renderer& other ) :
  * Destroy the Renderer.
  */
 Renderer::~Renderer() {
-    if( material ) {
-        delete ( material );
-    }
-
-    if( mesh ) {
-        delete ( mesh );
-    }
+    material = nullptr;
+    mesh = nullptr;
 }
 
 Renderer& Renderer::operator=( const Renderer& other ) {
     if( this != &other ) {
-        Component::operator=( other );
+//        Component::operator=( other );
 
         enabled = other.enabled;
         material = other.material;
@@ -85,7 +80,7 @@ Renderer& Renderer::operator=( const Renderer& other ) {
  *
  * @return the material assigned to the Renderer
  */
-Material* Renderer::GetMaterial() const {
+std::shared_ptr< Material > Renderer::GetMaterial() const {
     return material;
 }
 
@@ -94,7 +89,7 @@ Material* Renderer::GetMaterial() const {
  *
  * @return the Mesh assigned to the Renderer
  */
-Mesh* Renderer::GetMesh() const {
+std::shared_ptr< Mesh > Renderer::GetMesh() const {
     return mesh;
 }
 
@@ -102,7 +97,9 @@ std::vector< Primitive* > Renderer::GetPrimitives() const {
     std::vector< Primitive* > primitives;
 
     for( const std::unique_ptr< Primitive >& p : mesh->GetPrimitives() ) {
-        primitives.emplace_back( p->ToWorldSpace( _localToWorldMatrix ) );
+//        primitives.emplace_back( p->ToWorldSpace( _localToWorldMatrix ) );
+        primitives.emplace_back(
+                p->ToWorldSpace( gameObject->transform->localToWorldMatrix ) );
     }
 
     return primitives;

@@ -8,7 +8,7 @@
 
 #include "pch.h"
 
-using RayTracing::Object;
+using RayTracer::Object;
 
 int Object::NEXT_ID = 0;
 

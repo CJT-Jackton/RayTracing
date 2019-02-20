@@ -8,9 +8,13 @@
 
 #include "pch.h"
 
-using RayTracing::Triangle;
-using RayTracing::Ray;
+using RayTracer::Triangle;
+using RayTracer::Ray;
+using RayTracer::RaycastHit;
 
+/**
+ * Create a Triangle.
+ */
 Triangle::Triangle() :
         vertices{},
         normals{},
@@ -18,6 +22,11 @@ Triangle::Triangle() :
         color{} {
 }
 
+/**
+ * Copy the Triangle from another Triangle.
+ *
+ * @param other the Triangle to copy from.
+ */
 Triangle::Triangle( const Triangle& other ) :
         Primitive( other ),
         vertices{
@@ -32,15 +41,14 @@ Triangle* Triangle::Clone() const {
 }
 
 /**
- * Determine whether a ray intersect with the triangle.
+ * Determine whether a ray intersect with the primitive.
  *
  * @param ray the ray
+ * @param hit the intersection information
  *
- * @return the distance between the origin of the ray and the
- *         intersection point if intersect, a negative number if
- *         no intersection
+ * @return true if there is intersection, false if not
  */
-float Triangle::Intersect( Ray ray ) const {
+bool Triangle::Intersect( Ray ray, RaycastHit& hit ) const {
     float3 e1 = vertices[ 1 ] - vertices[ 0 ];
     float3 e2 = vertices[ 2 ] - vertices[ 0 ];
 
@@ -49,18 +57,32 @@ float Triangle::Intersect( Ray ray ) const {
     float3 Q = cross( T, e1 );
 
     if( dot( P, e1 ) == 0.0f ) {
-        return -1;
+        return false;
     }
 
     float3 result = 1.0f / dot( P, e1 )
                     * float3( dot( Q, e2 ), dot( P, T ),
                               dot( Q, ray.direction ) );
 
-    if( result.y < 0.0f || result.z < 0.0f || result.y + result.z > 1.0f ) {
-        return -1;
+    if( result.x < 0.0f ) {
+        return false;
     }
 
-    return result.x;
+    if( result.y < 0.0f || result.z < 0.0f || result.y + result.z > 1.0f ) {
+        return false;
+    }
+
+    hit.primitive = ( Primitive * )
+    this;
+    hit.distance = result.x;
+    hit.point = ray.GetPoint( hit.distance );
+
+    float3 w = GetBarycentricCoordinates( hit.point );
+
+    hit.normal = w.x * normals[ 0 ] + w.y * normals[ 1 ] + w.z * normals[ 2 ];
+    hit.textureCoord = w.x * uv[ 0 ] + w.y * uv[ 1 ] + w.z * uv[ 2 ];
+
+    return true;
 }
 
 /**
@@ -72,12 +94,13 @@ float Triangle::Intersect( Ray ray ) const {
  */
 Triangle* Triangle::ToWorldSpace( float4x4 localToWorldMatrix ) const {
     Triangle* triangle = new Triangle( *this );
+    float4x4 normalMatrix = transpose( inverse( localToWorldMatrix ) );
 
     for( int i = 0; i < 3; ++i ) {
         triangle->vertices[ i ] = mul( localToWorldMatrix,
-                                       float4( vertices[ i ].x, vertices[ i ].y,
-                                               vertices[ i ].z,
-                                               1.0f ) ).xyz;
+                                       float4( vertices[ i ], 1.0f ) ).xyz;
+        triangle->normals[ i ] = mul( normalMatrix,
+                                      float4( normals[ i ], 1.0f ) ).xyz;
     }
 
     return triangle;
@@ -92,13 +115,35 @@ Triangle* Triangle::ToWorldSpace( float4x4 localToWorldMatrix ) const {
  */
 Triangle* Triangle::ToCameraSpace( float4x4 worldToCameraMatrix ) const {
     Triangle* triangle = new Triangle( *this );
+    float4x4 normalMatrix = transpose( inverse( worldToCameraMatrix ) );
 
     for( int i = 0; i < 3; ++i ) {
-        float4 tmp = float4( vertices[ i ].x, vertices[ i ].y, vertices[ i ].z,
-                             1.0f );
-
-        triangle->vertices[ i ] = mul( worldToCameraMatrix, tmp ).xyz;
+        triangle->vertices[ i ] = mul( worldToCameraMatrix,
+                                       float4( vertices[ i ], 1.0f ) ).xyz;
+        triangle->normals[ i ] = mul( normalMatrix,
+                                      float4( normals[ i ], 1.0f ) ).xyz;
     }
 
     return triangle;
+}
+
+/**
+ * Calculate the barycentric coordinate of a point.
+ *
+ * @param point the point
+ *
+ * @return the barycentric coordinate
+ */
+float3 Triangle::GetBarycentricCoordinates( float3 point ) const {
+    float area = length( cross( vertices[ 0 ] - vertices[ 1 ],
+                                vertices[ 0 ] - vertices[ 2 ] ) );
+
+    float a = length( cross( vertices[ 1 ] - point,
+                             vertices[ 2 ] - point ) ) / area;
+    float b = length( cross( vertices[ 2 ] - point,
+                             vertices[ 0 ] - point ) ) / area;
+    float c = length( cross( vertices[ 0 ] - point,
+                             vertices[ 1 ] - point ) ) / area;
+
+    return float3( a, b, c );
 }

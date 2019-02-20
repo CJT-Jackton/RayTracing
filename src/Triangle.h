@@ -11,28 +11,35 @@
 
 #include "pch.h"
 
-namespace RayTracing {
+namespace RayTracer {
     /**
      * The basic triangle.
      */
     class Triangle : public Primitive {
     public:
+        /**
+         * Create a Triangle.
+         */
         Triangle();
 
+        /**
+         * Copy the Triangle from another Triangle.
+         *
+         * @param other the Triangle to copy from.
+         */
         Triangle( const Triangle& other );
 
         Triangle* Clone() const;
 
         /**
-         * Determine whether a ray intersect with the triangle.
+         * Determine whether a ray intersect with the primitive.
          *
          * @param ray the ray
+         * @param hit the intersection information
          *
-         * @return the distance between the origin of the ray and the
-         *         intersection point if intersect, a negative number if
-         *         no intersection
+         * @return true if there is intersection, false if not
          */
-        float Intersect( Ray ray ) const;
+        bool Intersect( Ray ray, RaycastHit& hit ) const;
 
         /**
          * Convert the triangle into world space.
@@ -52,6 +59,15 @@ namespace RayTracing {
          */
         Triangle* ToCameraSpace( float4x4 worldToCameraMatrix ) const;
 
+        /**
+         * Calculate the barycentric coordinate of a point.
+         *
+         * @param point the point
+         *
+         * @return the barycentric coordinate
+         */
+        float3 GetBarycentricCoordinates( float3 point ) const;
+
     public:
         /** the vertices */
         float3 vertices[3];
@@ -66,6 +82,6 @@ namespace RayTracing {
         float4 color[3];
 
     }; // Triangle
-} // RayTracing
+} // RayTracer
 
 #endif // TRIANGLE_H

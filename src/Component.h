@@ -12,7 +12,7 @@
 
 #include "pch.h"
 
-namespace RayTracing {
+namespace RayTracer {
     /**
      * Base class for everything attached to GameObjects.
      */
@@ -45,6 +45,6 @@ namespace RayTracing {
         /** the GameObject attached to */
         GameObject* const& gameObject;
     }; // Component
-} // RayTracing
+} // RayTracer
 
 #endif // COMPONENT_H

@@ -11,7 +11,7 @@
 
 #include "Texture.h"
 
-namespace RayTracing {
+namespace RayTracer {
     /**
      * Class for texture handling.
      */
@@ -35,6 +35,8 @@ namespace RayTracing {
          */
         Texture2D( int w, int h,
                    TextureFormat textureFormat = TextureFormat::RGBA32 );
+
+        float4 GetColor( float u, float v ) const;
 
         /**
          * Get the pixel value at given position.
@@ -93,6 +95,6 @@ namespace RayTracing {
         std::vector< BYTE > rawData;
 
     }; // Texture2D
-} // RayTracing
+} // RayTracer
 
 #endif // TEXTURE2D_H

@@ -12,7 +12,7 @@
 
 #include "pch.h"
 
-namespace RayTracing {
+namespace RayTracer {
     /**
      * Class of ray.
      */
@@ -44,6 +44,8 @@ namespace RayTracing {
          */
         float3 GetPoint( float distance ) const;
 
+//        bool Raycast( std::vector< Primitive* >& primitives, RaycastHit& hit );
+
     private:
         /** the origin point of the ray */
         float3 _origin;
@@ -59,6 +61,6 @@ namespace RayTracing {
         const float3 direction;
 
     }; // Ray
-} // RayTracing
+} // RayTracer
 
 #endif // RAY_H

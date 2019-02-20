@@ -11,7 +11,7 @@
 
 #include "pch.h"
 
-namespace RayTracing {
+namespace RayTracer {
     /**
      * Base class for all entities in the Scenes.
      */
@@ -99,6 +99,8 @@ namespace RayTracing {
         /** the renderer of the GameObject */
         Renderer* _renderer;
 
+        std::vector< Component* > components;
+
         /** scene that the GameObject is part of */
         Scene* _scene;
 
@@ -113,12 +115,12 @@ namespace RayTracing {
         Transform* const& transform;
 
         /** the renderer of the GameObject */
-        Renderer* const& renderer;
+//        Renderer* const& renderer;
 
         /** scene that the GameObject is part of */
         Scene* const& scene;
 
     }; // GameObject
-} // RayTracing
+} // RayTracer
 
 #endif // GAMEOBJECT_H

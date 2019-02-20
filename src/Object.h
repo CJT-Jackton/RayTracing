@@ -13,7 +13,7 @@
 
 using namespace hlslpp;
 
-namespace RayTracing {
+namespace RayTracer {
     /**
      * The base class of all object.
      */
@@ -105,6 +105,6 @@ namespace RayTracing {
         static int NEXT_ID;
 
     }; // Object
-} // RayTracing
+} // RayTracer
 
 #endif // OBJECT_H

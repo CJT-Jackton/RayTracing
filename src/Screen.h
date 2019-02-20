@@ -11,7 +11,7 @@
 
 #include "pch.h"
 
-namespace RayTracing {
+namespace RayTracer {
     /**
      * Access to display information.
      */
@@ -40,6 +40,6 @@ namespace RayTracing {
         static const int& height;
 
     }; // Screen
-} // RayTracing
+} // RayTracer
 
 #endif // SCREEN_H

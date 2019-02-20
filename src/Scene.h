@@ -11,7 +11,7 @@
 
 #include "pch.h"
 
-namespace RayTracing {
+namespace RayTracer {
     /**
      * The scene.
      */
@@ -60,6 +60,6 @@ namespace RayTracing {
         const std::string name;
 
     }; // Scene
-} // RayTracing
+} // RayTracer
 
 #endif // SCENE_H

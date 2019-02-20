@@ -9,7 +9,12 @@
 #ifndef MATERIAL_H
 #define MATERIAL_H
 
-namespace RayTracing {
+#include "pch.h"
+#include "Object.h"
+#include "Shader.h"
+#include "Texture.h"
+
+namespace RayTracer {
     /**
      * The material class.
      */
@@ -17,13 +22,33 @@ namespace RayTracing {
     public:
         /**
          * Create a Material.
+         *
+         * @param shader the shader used by the material
          */
-        Material();
+        Material( Shader* shader );
+
+        /**
+         * Delete the Material.
+         */
+        ~Material();
+
+        /**
+         * Use another type of shader.
+         *
+         * @param type the type of shader
+         */
+        void UseShader( Shader::ShaderType type );
 
     public:
+        /** the shader used by the material */
+        Shader* shader;
+
         /** the color */
         float4 color;
+
+        /** the texture used by the material */
+        Texture* mainTexture;
     }; // Material
-} // RayTracing
+} // RayTracer
 
 #endif // MATERIAL_H

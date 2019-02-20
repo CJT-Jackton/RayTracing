@@ -8,9 +8,9 @@
 
 #include "pch.h"
 
-using RayTracing::Mesh;
-using RayTracing::Object;
-using RayTracing::Primitive;
+using RayTracer::Mesh;
+using RayTracer::Object;
+using RayTracer::Primitive;
 
 /**
  * Create a empty Mesh.

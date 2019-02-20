@@ -14,7 +14,7 @@
 
 #include "pch.h"
 
-namespace RayTracing {
+namespace RayTracer {
     /**
      * Texture that can be rendered to.
      */
@@ -27,6 +27,8 @@ namespace RayTracing {
          * @param h the height
          */
         RenderTexture( int w, int h );
+
+        float4 GetColor( float u, float v ) const;
 
         /**
          * Read the color buffer.
@@ -84,6 +86,9 @@ namespace RayTracing {
          */
         BYTE* GetNativeTexturePtr() const override;
 
+    protected:
+        float3 ACESFilm( float3 x );
+
     public:
         /** color buffer */
         RenderBuffer colorBuffer;
@@ -92,6 +97,6 @@ namespace RayTracing {
         RenderBuffer depthBuffer;
 
     }; // RenderTexture
-} // RayTracing
+} // RayTracer
 
 #endif // RENDERTEXTURE_H

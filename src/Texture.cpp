@@ -8,7 +8,7 @@
 
 #include "pch.h"
 
-using RayTracing::Texture;
+using RayTracer::Texture;
 
 /**
  * Create a Texture with given size.

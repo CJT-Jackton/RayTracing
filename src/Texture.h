@@ -11,7 +11,7 @@
 
 #include "pch.h"
 
-namespace RayTracing {
+namespace RayTracer {
     /**
      * Base class for texture handling.
      */
@@ -32,6 +32,8 @@ namespace RayTracing {
          */
         virtual BYTE* GetNativeTexturePtr() const = 0;
 
+        virtual float4 GetColor( float u, float v ) const = 0;
+
     public:
         /** width of the texture in pixels */
         const int width;
@@ -40,6 +42,6 @@ namespace RayTracing {
         const int height;
 
     }; // Texture
-} // RayTracing
+} // RayTracer
 
 #endif // TEXTURE_H

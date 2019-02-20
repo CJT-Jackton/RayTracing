@@ -8,7 +8,7 @@
 
 #include "pch.h"
 
-using RayTracing::Primitive;
+using RayTracer::Primitive;
 
 /**
  * Copy a Primitive from another Primitive.

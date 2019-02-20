@@ -8,10 +8,12 @@
 
 #include "pch.h"
 
-using RayTracing::GameObject;
-using RayTracing::Transform;
-using RayTracing::Renderer;
-using RayTracing::Scene;
+using RayTracer::GameObject;
+using RayTracer::Component;
+using RayTracer::Transform;
+using RayTracer::Renderer;
+using RayTracer::Light;
+using RayTracer::Scene;
 
 /**
  * Create a GameObject.
@@ -22,9 +24,10 @@ GameObject::GameObject() :
         tag{},
         _transform{},
         _renderer{},
+        components{},
         _scene{},
         transform{ _transform },
-        renderer{ _renderer },
+//        renderer{ _renderer },
         scene{ _scene } {
     // create a transform for the game object
     AddComponent< Transform >();
@@ -41,9 +44,10 @@ GameObject::GameObject( std::string name ) :
         tag{},
         _transform{},
         _renderer{},
+        components{},
         _scene{},
         transform{ _transform },
-        renderer{ _renderer },
+//        renderer{ _renderer },
         scene{ _scene } {
     // create a transform for the game object
     AddComponent< Transform >();
@@ -60,24 +64,35 @@ GameObject::GameObject( const GameObject& other ) :
         tag{ other.tag },
         _transform{},
         _renderer{},
-        _scene{},
+        components{},
+        _scene{ other._scene },
         transform{ _transform },
-        renderer{ _renderer },
+//        renderer{ _renderer },
         scene{ _scene } {
     // create a transform for the game object
     AddComponent< Transform >();
     _transform = other._transform;
 
     // copy component
-    if( other.GetComponent< Renderer >() ) {
-        AddComponent< Renderer >();
-        _renderer = other._renderer;
+//    if( other.GetComponent< Renderer >() ) {
+//        AddComponent< Renderer >();
+//        _renderer = other._renderer;
+//    }
+
+    for( Component* component : other.components ) {
+        if( Renderer* renderer = dynamic_cast<Renderer*>(component) ) {
+            Renderer* newRenderer = AddComponent< Renderer >();
+            *newRenderer = *renderer;
+        } else if( Light* light = dynamic_cast<Light*>(component) ) {
+            Light* newLight = AddComponent< Light >();
+            *newLight = *light;
+        }
     }
 
     // move to same scene
-    if( other._scene ) {
-        MoveToScene( *other._scene );
-    }
+//    if( other._scene ) {
+//        MoveToScene( *other._scene );
+//    }
 }
 
 /**
@@ -88,8 +103,8 @@ GameObject::~GameObject() {
         delete ( transform );
     }
 
-    if( GetComponent< Renderer >() ) {
-        delete ( renderer );
+    for( Component* component : components ) {
+        delete ( component );
     }
 }
 
@@ -117,6 +132,8 @@ template Transform* GameObject::AddComponent< Transform >();
 
 template Renderer* GameObject::AddComponent< Renderer >();
 
+template Light* GameObject::AddComponent< Light >();
+
 /**
  * Add a Component to the GameObject.
  *
@@ -130,8 +147,13 @@ T* GameObject::AddComponent() {
         _transform = ( Transform* ) new T( this );
         return ( T* ) transform;
     } else if( typeid( T ) == typeid( Renderer ) ) {
-        _renderer = ( Renderer* ) new T( this );
+        Renderer* renderer = ( Renderer* ) new T( this );
+        components.emplace_back( renderer );
         return ( T* ) renderer;
+    } else if( typeid( T ) == typeid( Light ) ) {
+        Light* light = ( Light* ) new T( this );
+        components.emplace_back( light );
+        return ( T* ) light;
     }
 
     return nullptr;
@@ -141,6 +163,8 @@ T* GameObject::AddComponent() {
 template Transform* GameObject::GetComponent< Transform >() const;
 
 template Renderer* GameObject::GetComponent< Renderer >() const;
+
+template Light* GameObject::GetComponent< Light >() const;
 
 /**
  * Get the Component attached to the GameObject, null if no Component attached.
@@ -154,7 +178,17 @@ T* GameObject::GetComponent() const {
     if( typeid( T ) == typeid( Transform ) ) {
         return ( T* ) transform;
     } else if( typeid( T ) == typeid( Renderer ) ) {
-        return ( T* ) renderer;
+        for( Component* component : components ) {
+            if( Renderer* renderer = dynamic_cast<Renderer*>(component) ) {
+                return ( T* ) renderer;
+            }
+        }
+    } else if( typeid( T ) == typeid( Light ) ) {
+        for( Component* component : components ) {
+            if( Light* light = dynamic_cast<Light*>(component) ) {
+                return ( T* ) light;
+            }
+        }
     }
 
     return nullptr;

@@ -8,8 +8,8 @@
 
 #include "pch.h"
 
-using RayTracing::RenderBuffer;
-using RayTracing::BYTE;
+using RayTracer::RenderBuffer;
+using RayTracer::BYTE;
 
 /**
  * Create a render buffer.

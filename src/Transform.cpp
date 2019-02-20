@@ -8,8 +8,8 @@
 
 #include "pch.h"
 
-using RayTracing::Transform;
-using RayTracing::GameObject;
+using RayTracer::Transform;
+using RayTracer::GameObject;
 
 /**
  * Create a Transform for a GameObject.
@@ -76,6 +76,8 @@ Transform& Transform::operator=( const Transform& other ) {
         _right = other._right;
         _up = other._up;
         _forward = other._forward;
+        _localToWorldMatrix = other._localToWorldMatrix;
+        _worldToLocalMatrix = other._worldToLocalMatrix;
     }
 
     return *this;
@@ -179,6 +181,25 @@ void Transform::Rotate( float3 eulers ) {
  */
 void Transform::Rotate( float xAngle, float yAngle, float zAngle ) {
     Rotate( float3( xAngle, yAngle, zAngle ) );
+}
+
+void Transform::ToSpace( float4x4 matrix ) {
+    _position = mul( matrix, float4( _position, 1.0f ) ).xyz;
+
+    float4x4 m_r = matrix;
+    m_r._14 = 0.0f;
+    m_r._24 = 0.0f;
+    m_r._34 = 0.0f;
+    _euler = mul( m_r, float4( _euler, 1.0f ) ).xyz;
+    _scale = mul( m_r, float4( _scale, 1.0f ) ).xyz;
+
+    float4x4 m = transpose( inverse( matrix ) );
+    _right = mul( m, float4( _right, 1.0f ) ).xyz;
+    _up = mul( m, float4( _up, 1.0f ) ).xyz;
+    _forward = mul( m, float4( _forward, 1.0f ) ).xyz;
+
+    _localToWorldMatrix = mul( localToWorldMatrix, matrix );
+    _worldToLocalMatrix = inverse( _localToWorldMatrix );
 }
 
 /**

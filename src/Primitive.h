@@ -11,7 +11,7 @@
 
 #include "pch.h"
 
-namespace RayTracing {
+namespace RayTracer {
     /**
      * The base class of primitive.
      */
@@ -45,12 +45,11 @@ namespace RayTracing {
          * Determine whether a ray intersect with the primitive.
          *
          * @param ray the ray
+         * @param hit the intersection information
          *
-         * @return the distance between the origin of the ray and the
-         *         intersection point if intersect, a negative number if
-         *         no intersection
+         * @return true if there is intersection, false if not
          */
-        virtual float Intersect( Ray ray ) const = 0;
+        virtual bool Intersect( Ray ray, RaycastHit& hit ) const = 0;
 
         /**
          * Convert the primitive into world space.
@@ -77,6 +76,6 @@ namespace RayTracing {
         const Mesh* mesh;
 
     }; // Primitive
-} // RayTracing
+} // RayTracer
 
 #endif // PRIMITIVE_H

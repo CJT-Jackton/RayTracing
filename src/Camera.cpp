@@ -1,14 +1,20 @@
 //
 // Camera.cpp
 //
+// The implementation of Camera.
+//
 // Created by Jietong Chen on 1/31/2019.
 //
 
 #include "pch.h"
 
-using RayTracing::Camera;
-using RayTracing::Ray;
-using RayTracing::Primitive;
+using RayTracer::Camera;
+using RayTracer::Ray;
+using RayTracer::Primitive;
+using RayTracer::Light;
+using RayTracer::Shader;
+using RayTracer::Phong;
+using RayTracer::BlinnPhong;
 
 std::vector< Camera* >Camera::allCameras;
 const unsigned int& Camera::allCamerasCount = Camera::allCameras.size();
@@ -66,18 +72,31 @@ void Camera::Render() {
     ResetWorldToCameraMatrix();
 
     std::vector< GameObject* > rootGameObjects = scene->GetRootGameObjects();
-    std::vector< GameObject* > renderObjects{ rootGameObjects };
+//    std::vector< GameObject* > allObjects{ rootGameObjects };
+    std::vector< GameObject* > allObjects;
+
+    for( GameObject* gameObject : rootGameObjects ) {
+        if( this != gameObject ) {
+            GameObject* goInCameraSpace = new GameObject( *gameObject );
+            goInCameraSpace->transform->ToSpace( worldToCameraMatrix );
+            allObjects.emplace_back( goInCameraSpace );
+        }
+    }
 
     std::vector< Primitive* > primitives;
+    std::vector< Light* > lights;
 
-    for( GameObject* renderObject : renderObjects ) {
-        if( *renderObject && renderObject->GetComponent< Renderer >() ) {
+    for( GameObject* gameObject : allObjects ) {
+        if( *gameObject && gameObject->GetComponent< Renderer >() ) {
             for( Primitive* p :
-                    renderObject->GetComponent< Renderer >()->GetPrimitives() ) {
+                    gameObject->GetComponent< Renderer >()->GetPrimitives() ) {
 
-                primitives.emplace_back(
-                        p->ToCameraSpace( worldToCameraMatrix ) );
+                primitives.emplace_back( p );
             }
+        }
+
+        if( *gameObject && gameObject->GetComponent< Light >() ) {
+            lights.emplace_back( gameObject->GetComponent< Light >() );
         }
     }
 
@@ -93,19 +112,21 @@ void Camera::Render() {
 
     int totalPixel = pixelWidth * pixelHeight;
     int blockSize = ( int ) ceil(
-            totalPixel / ( double ) RayTracing::THREAD_NUMBER );
+            totalPixel / ( double ) RayTracer::THREAD_NUMBER );
 
-    for( int i = 0; i < RayTracing::THREAD_NUMBER - 1; ++i ) {
-        threads.emplace_back( std::thread( [ & ] {
+    for( int i = 0; i < RayTracer::THREAD_NUMBER - 1; ++i ) {
+        threads.emplace_back( std::move( std::thread( [ & ] {
             RenderBlock( i * blockSize, ( i + 1 ) * blockSize,
-                         primitives );
-        } ) );
+                         primitives, lights );
+        } ) ) );
+
+        std::this_thread::sleep_for( std::chrono::milliseconds( 50 ) );
     }
 
-    threads.emplace_back( std::thread( [ & ] {
-        RenderBlock( ( RayTracing::THREAD_NUMBER - 1 ) * blockSize, totalPixel,
-                     primitives );
-    } ) );
+    threads.emplace_back( std::move( std::thread( [ & ] {
+        RenderBlock( ( RayTracer::THREAD_NUMBER - 1 ) * blockSize, totalPixel,
+                     primitives, lights );
+    } ) ) );
 
     for( auto& t : threads ) {
         t.join();
@@ -116,17 +137,22 @@ void Camera::Render() {
         int x = i % pixelWidth;
         int y = i / pixelWidth;
 
-        RenderPixel( x, y, primitives );
+        RenderPixel( x, y, primitives, lights );
     }
 
     for( Primitive* primitive : primitives ) {
         delete ( primitive );
     }
 #endif
+
+//    for( GameObject* gameObject : allObjects ) {
+//        delete ( gameObject );
+//    }
 }
 
 void Camera::RenderPixel( int x, int y,
-                          std::vector< Primitive* >& primitives ) {
+                          std::vector< Primitive* >& primitives,
+                          std::vector< Light* >& lights ) {
     float3 point( x * pixelUnitWidth - filmPlaneWidth * 0.5f +
                   pixelUnitWidth * 0.5f,
                   -y * pixelUnitHeight + filmPlaneHeight * 0.5f -
@@ -134,16 +160,79 @@ void Camera::RenderPixel( int x, int y,
                   focalLength
     );
 
+    if( x == 477 && y == 247 ) {
+        x = 477;
+    }
+
     Ray ray = ViewportPointToRay( point );
+    RaycastHit hit;
+    RaycastHit hitInfo;
+
     float4 finalColor = backgroundColor;
     float depth = farClipPlane;
+    int nearestIndex = -1;
 
-    for( Primitive* primitive : primitives ) {
-        float distance = primitive->Intersect( ray );
+    for( unsigned int i = 0; i < primitives.size(); ++i ) {
+        if( primitives[ i ]->Intersect( ray, hitInfo ) ) {
+            if( hitInfo.distance < depth ) {
+                nearestIndex = i;
+                depth = hitInfo.distance;
+                hit = hitInfo;
+            }
+        }
+    }
 
-        if( distance > 0 && distance < depth ) {
-            finalColor = primitive->mesh->renderer->material->color;
-            depth = distance;
+    if( nearestIndex >= 0 ) {
+        finalColor = float4( 0.0f );
+
+        for( const Light* light : lights ) {
+            bool inShadow = false;
+            Ray shadowRay = light->GetShadowRay( hit.point );
+            RaycastHit h;
+
+            for( unsigned int i = 0; i < primitives.size(); ++i ) {
+                if( i != nearestIndex ) {
+                    if( primitives[ i ]->Intersect( shadowRay, h ) ) {
+                        inShadow = true;
+                        break;
+                    }
+                }
+            }
+
+            if( inShadow ) {
+                continue;
+            }
+
+            Shader* shader =
+                    primitives[ nearestIndex ]->mesh->renderer->material->shader;
+
+            if( shader->Type() == Shader::Phong ) {
+                Phong pshader = Phong( ( const Phong& ) *shader );
+
+//                pshader.view = -normalize( hit.point );
+                pshader.view = -ray.direction;
+                pshader.normal = hit.normal;
+                pshader.light = shadowRay.direction;
+                pshader.uv = hit.textureCoord;
+
+                pshader.lightPositon = light->gameObject->transform->positon;
+                pshader.lightColor = light->color * light->intensity;
+
+                finalColor += pshader.Shading();
+            } else if( shader->Type() == Shader::BlinnPhong ) {
+                BlinnPhong bshader = BlinnPhong(
+                        ( const BlinnPhong& ) *shader );
+
+                bshader.view = -ray.direction;
+                bshader.normal = hit.normal;
+                bshader.light = shadowRay.direction;
+                bshader.uv = hit.textureCoord;
+
+                bshader.lightPositon = light->gameObject->transform->positon;
+                bshader.lightColor = light->color * light->intensity;
+
+                finalColor += bshader.Shading();
+            }
         }
     }
 
@@ -164,15 +253,17 @@ void Camera::RenderPixel( int x, int y,
 
     targetTexture.WriteDepthBuffer( x, y, depth, 110 );
     targetTexture.WriteColorBuffer( x, y, finalColor );
+//    targetTexture.WriteColorBuffer( x, y, float4( normal, 1.0f ) );
 }
 
 void Camera::RenderBlock( int start, int end,
-                          std::vector< Primitive* >& primitives ) {
+                          std::vector< Primitive* >& primitives,
+                          std::vector< Light* >& lights ) {
     for( int i = start; i < end; ++i ) {
         int x = i % pixelWidth;
         int y = i / pixelWidth;
 
-        RenderPixel( x, y, primitives );
+        RenderPixel( x, y, primitives, lights );
     }
 }
 

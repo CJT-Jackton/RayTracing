@@ -11,7 +11,7 @@
 
 #include "pch.h"
 
-namespace RayTracing {
+namespace RayTracer {
     /**
      * Position, rotation and scale of an object.
      */
@@ -99,6 +99,8 @@ namespace RayTracing {
          * @param zAngle degrees to rotate around the z axis
          */
         void Rotate( float xAngle, float yAngle, float zAngle );
+
+        void ToSpace( float4x4 matrix );
 
         /**
          * Get interator pointing to the first child of the Transform.
@@ -212,6 +214,6 @@ namespace RayTracing {
         float4x4 _worldToLocalMatrix;
 
     }; // Transform
-} // RayTracing
+} // RayTracer
 
 #endif // TRANSFORM_H

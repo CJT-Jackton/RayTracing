@@ -11,7 +11,7 @@
 
 #include "pch.h"
 
-namespace RayTracing {
+namespace RayTracer {
     /**
      * Mesh class contain an array of primitive.
      */
@@ -46,6 +46,6 @@ namespace RayTracing {
         /** the renderer this mesh belong */
         Renderer* renderer;
     };
-} // RayTracing
+} // RayTracer
 
 #endif // MESH_H

@@ -8,7 +8,7 @@
 
 #include "pch.h"
 
-using RayTracing::Ray;
+using RayTracer::Ray;
 
 /**
  * Create a ray.
@@ -51,3 +51,22 @@ Ray& Ray::operator=( const Ray& other ) {
 float3 Ray::GetPoint( float distance ) const {
     return origin + direction * distance;
 }
+
+//bool Ray::Raycast( std::vector< Primitive* >& primitives, RaycastHit& hit ) {
+//    RaycastHit hitInfo;
+//    float depth = 2000.0f;
+//    bool intersect = false;
+//
+//    for( Primitive* primitive : primitives ) {
+//        if( primitive->Intersect( *this, hitInfo ) ) {
+//            intersect = true;
+//
+//            if( hitInfo.distance < depth && hitInfo.distance > 0 ) {
+//                hit = hitInfo;
+//                depth = hitInfo.distance;
+//            }
+//        }
+//    }
+//
+//    return intersect;
+//}

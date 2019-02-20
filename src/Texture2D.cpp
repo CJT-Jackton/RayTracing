@@ -8,9 +8,9 @@
 
 #include "pch.h"
 
-using RayTracing::Texture2D;
-using RayTracing::BYTE;
-using RayTracing::floatBYTE;
+using RayTracer::Texture2D;
+using RayTracer::BYTE;
+using RayTracer::floatBYTE;
 
 /**
  * Create a Texture2D with given size.
@@ -23,6 +23,15 @@ Texture2D::Texture2D( int w, int h, TextureFormat textureFormat ) :
         Texture{ w, h },
         format{ textureFormat },
         rawData( w * h * 4, 0 ) {
+}
+
+float4 Texture2D::GetColor( float u, float v ) const {
+    int x, y;
+
+    x = ( int ) ( u * width );
+    y = ( int ) ( v * height );
+
+    return GetPixel( x, y );
 }
 
 /**

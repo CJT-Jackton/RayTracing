@@ -8,14 +8,23 @@
 
 #include "pch.h"
 
-using RayTracing::Sphere;
-using RayTracing::Ray;
+using RayTracer::Sphere;
+using RayTracer::Ray;
+using RayTracer::RaycastHit;
 
+/**
+ * Create a Sphere.
+ */
 Sphere::Sphere() :
         center{ 0, 0, 0 },
         radius{ 1 } {
 }
 
+/**
+ * Copy a Sphere from another Sphere
+ *
+ * @param other the Sphere to copy from
+ */
 Sphere::Sphere( const Sphere& other ) :
         Primitive( other ),
         center{ other.center },
@@ -27,15 +36,14 @@ Sphere* Sphere::Clone() const {
 }
 
 /**
- * Determine whether a ray intersect with the sphere.
+ * Determine whether a ray intersect with the primitive.
  *
  * @param ray the ray
+ * @param hit the intersection information
  *
- * @return the distance between the origin of the ray and the
- *         intersection point if intersect, a negative number if
- *         no intersection
+ * @return true if there is intersection, false if not
  */
-float Sphere::Intersect( Ray ray ) const {
+bool Sphere::Intersect( Ray ray, RaycastHit& hit ) const {
     float B = 2.0f * ( ( ray.direction.x * ( ray.origin.x - center.x ) +
                          ray.direction.y * ( ray.origin.y - center.y ) +
                          ray.direction.z * ( ray.origin.z - center.z ) ) );
@@ -45,18 +53,31 @@ float Sphere::Intersect( Ray ray ) const {
               pow( radius, 2 );
 
     float delta = pow( B, 2 ) - 4 * C;
+    float distance;
 
     if( delta < 0 ) {
-        return -1;
+        return false;
     } else if( delta == 0 ) {
-        return -B / 2.0f;
+        distance = -B / 2.0f;
     } else {
         if( ( -B - delta ) / 2.0f > 0 ) {
-            return ( -B - delta ) / 2.0f;
+            distance = ( -B - delta ) / 2.0f;
         } else {
-            return ( -B + delta ) / 2.0f;
+            distance = ( -B + delta ) / 2.0f;
         }
     }
+
+    if( distance < 0.0f ) {
+        return false;
+    }
+
+    hit.primitive = ( Primitive * )this;
+    hit.distance = distance;
+    hit.point = ray.GetPoint( hit.distance );
+    hit.normal = normalize( hit.point - center );
+    hit.textureCoord = float2( 0.0f );
+
+    return true;
 }
 
 /**

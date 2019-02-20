@@ -18,8 +18,10 @@
 
 #include <hlsl++.h>
 #include <algorithm>
+#include <chrono>
 #include <cmath>
 #include <iostream>
+#include <iomanip>
 #include <iterator>
 #include <sstream>
 #include <string>
@@ -35,8 +37,7 @@
 
 #endif
 
-namespace RayTracing {
-
+namespace RayTracer {
     extern int THREAD_NUMBER;
 
     typedef unsigned char BYTE;
@@ -49,6 +50,8 @@ namespace RayTracing {
         float f;
         BYTE byte[4];
     };
+
+    class BlinnPhong;
 
     class Camera;
 
@@ -64,9 +67,13 @@ namespace RayTracing {
 
     class Object;
 
+    class Phong;
+
     class Primitive;
 
     class Ray;
+
+    struct RaycastHit;
 
     struct RenderBuffer;
 
@@ -78,6 +85,8 @@ namespace RayTracing {
 
     class Screen;
 
+    class Shader;
+
     class Sphere;
 
     class Texture;
@@ -87,12 +96,14 @@ namespace RayTracing {
     class Transform;
 
     class Triangle;
-} // RayTracing
+
+} // RayTracer
 
 #include "Object.h"
 #include "Component.h"
 #include "Scene.h"
 #include "Screen.h"
+#include "RaycastHit.h"
 #include "Ray.h"
 #include "Primitive.h"
 #include "Triangle.h"
@@ -102,6 +113,9 @@ namespace RayTracing {
 #include "RenderBuffer.h"
 #include "RenderTexture.h"
 #include "Texture2D.h"
+#include "Shader.h"
+#include "Phong.h"
+#include "BlinnPhong.h"
 #include "Material.h"
 #include "Transform.h"
 #include "Renderer.h"

@@ -8,8 +8,8 @@
 
 #include "pch.h"
 
-using RayTracing::Component;
-using RayTracing::GameObject;
+using RayTracer::Component;
+using RayTracer::GameObject;
 
 /**
  * Create a Component attached to a GameObject.
