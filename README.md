@@ -77,13 +77,25 @@ The color buffer above doesn't represent the actual color of the object, instead
 
 ### Phong shading model
 
+![phong](https://raw.githubusercontent.com/CJT-Jackton/RayTracing/master/Screenshots/Checkpoint3_Phong_colored.png "Phong Shading")
+
+![phong](https://raw.githubusercontent.com/CJT-Jackton/RayTracing/master/Screenshots/Checkpoint3_Phong.png "Phong Shading")
+
 Without color.
 
+![more light source](https://raw.githubusercontent.com/CJT-Jackton/RayTracing/master/Screenshots/Checkpoint3_multiple_lightsource.png "Phong Shading")
+
 Add more light.
+
+![more light source](https://raw.githubusercontent.com/CJT-Jackton/RayTracing/master/Screenshots/Checkpoint3_multiple_lightsource2.png "Phong Shading")
 
 View from another angle.
 
 ### Blinn-Phong shading model
+
+![blinn-phong](https://raw.githubusercontent.com/CJT-Jackton/RayTracing/master/Screenshots/Checkpoint3_Blinn-Phong_colored.png "Blinn-Phong Shading")
+
+![blinn-phong](https://raw.githubusercontent.com/CJT-Jackton/RayTracing/master/Screenshots/Checkpoint3_Blinn-Phong.png "Blinn-Phong Shading")
 
 Without color.
 
@@ -91,6 +103,16 @@ Without color.
 
 Multisample anti-aliasing with 4 rays per pixel.
 After tried out multiple sampling pattern, I found 4-Rooks pattern (Rotated grid supersampling) produced the best result in visual.
+
+![NoAA](https://raw.githubusercontent.com/CJT-Jackton/RayTracing/master/Screenshots/Checkpoint3_NoAA.png "No Anti-aliasing")
+
+No anti-aliasing.
+
+![MSAA4x](https://raw.githubusercontent.com/CJT-Jackton/RayTracing/master/Screenshots/Checkpoint3_MSAA4x.png "Multisample Anti-aliasing")
+
+With MSAA4x anti-aliasing.
+
+![NoAA vs MSAA4x](https://raw.githubusercontent.com/CJT-Jackton/RayTracing/master/Screenshots/Checkpoint3_NoAAvsMSAA4x.png "NoAA vs MSAA4x")
 
 Side by side comparison.
 
