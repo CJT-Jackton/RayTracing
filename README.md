@@ -73,6 +73,45 @@ The color buffer above doesn't represent the actual color of the object, instead
 ![another camera angle](https://raw.githubusercontent.com/CJT-Jackton/RayTracing/master/Screenshots/Checkpoint2_extra2.png "Another Camera Angle")
     *Scene Rendered From Another Camera*
 
+## Shading
+
+### Phong shading model
+
+Without color.
+
+Add more light.
+
+View from another angle.
+
+### Blinn-Phong shading model
+
+Without color.
+
+## Anti-aliasing
+
+Multisample anti-aliasing with 4 rays per pixel.
+After tried out multiple sampling pattern, I found 4-Rooks pattern (Rotated grid supersampling) produced the best result in visual.
+
+Side by side comparison.
+
+## Tone mapping
+
+There are multiple ways to convert the HDR image into LDR space. However the ACES film tone mapping is the most widely accepted and used tone mapping algorithm.
+
+### ACES film tone mapping
+
+```hlsl
+float3 ACESFilm( float3 x ) {
+    float a = 2.51f;
+    float b = 0.03f;
+    float c = 2.43f;
+    float d = 0.59f;
+    float e = 0.14f;
+    return saturate( ( x * ( a * x + b ) ) / ( x * ( c * x + d ) + e ) );
+}
+```
+
+Code and coefficients are from [Krzysztof Narkowicz](https://knarkowicz.wordpress.com/2016/01/06/aces-filmic-tone-mapping-curve/).
 
 ## Author
 Jietong Chen
