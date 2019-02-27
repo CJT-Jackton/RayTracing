@@ -83,11 +83,11 @@ The color buffer above doesn't represent the actual color of the object, instead
 
 Without color.
 
-![more light source](https://raw.githubusercontent.com/CJT-Jackton/RayTracing/master/Screenshots/Checkpoint3_multiple_lightsource.png "Phong Shading")
+![more light source](https://raw.githubusercontent.com/CJT-Jackton/RayTracing/master/Screenshots/Checkpoint3_multiple_lightsources.png "Phong Shading")
 
 Add more light.
 
-![more light source](https://raw.githubusercontent.com/CJT-Jackton/RayTracing/master/Screenshots/Checkpoint3_multiple_lightsource2.png "Phong Shading")
+![more light source](https://raw.githubusercontent.com/CJT-Jackton/RayTracing/master/Screenshots/Checkpoint3_multiple_lightsources2.png "Phong Shading")
 
 View from another angle.
 
