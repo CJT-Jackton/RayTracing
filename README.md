@@ -1,5 +1,5 @@
-# Ray Tracing Assigment
-Ray tracing with Physically Based Rendering.
+# Ray Tracing
+Offline rendering application by ray tracing.
 
 ## Requirements
 
