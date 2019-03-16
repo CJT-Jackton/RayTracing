@@ -1,5 +1,12 @@
 # Ray Tracing
+
 Offline rendering application by ray tracing.
+
+### Features
+
+- Spatial data structure (k-d tree)
+- Photon mapping
+- Procedural texture
 
 ## Requirements
 
