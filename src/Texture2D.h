@@ -36,8 +36,6 @@ namespace RayTracer {
         Texture2D( int w, int h,
                    TextureFormat textureFormat = TextureFormat::RGBA32 );
 
-        float4 GetColor( float u, float v ) const;
-
         /**
          * Get the pixel value at given position.
          *
@@ -73,12 +71,14 @@ namespace RayTracer {
          */
         void LoadRawTextureData( BYTE* data );
 
+        void ReadTextureFromPNG( const std::string& filename);
+
         /**
          * Save the texture into a png flie.
          *
          * @param filename the file name
          */
-        void SaveTextureToPNG( std::string filename ) const;
+        void SaveTextureToPNG( const std::string& filename ) const;
 
         /**
          * Get the pointer to the texture native data.

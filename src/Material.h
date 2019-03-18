@@ -48,6 +48,12 @@ namespace RayTracer {
 
         /** the texture used by the material */
         Texture* mainTexture;
+
+        /** the texture offset of the main texture */
+        float2 mainTextureOffset;
+
+        /** the texture scale of the main texture */
+        float2 mainTextureScale;
     }; // Material
 } // RayTracer
 

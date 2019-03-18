@@ -25,6 +25,8 @@ Phong::Phong() :
         mainColor{},
         specularColor{},
         mainTexture{},
+        mainTextureScale{ float2( 1.0f ) },
+        mainTextureOffset{ float2( 0.0f ) },
         kd{ 1.0f },
         ks{ 1.0f },
         shininess{ 0.078125f } {
@@ -46,6 +48,8 @@ Phong::Phong( const Phong& other ) :
         mainColor{ other.mainColor },
         specularColor{ other.specularColor },
         mainTexture{ other.mainTexture },
+        mainTextureScale{ other.mainTextureScale },
+        mainTextureOffset{ other.mainTextureOffset },
         kd{ other.kd },
         ks{ other.ks },
         shininess{ other.shininess } {
@@ -69,6 +73,8 @@ Phong& Phong::operator=( const Phong& other ) {
         mainColor = other.mainColor;
         specularColor = other.specularColor;
         mainTexture = other.mainTexture;
+        mainTextureScale = other.mainTextureScale;
+        mainTextureOffset = other.mainTextureOffset;
         kd = other.kd;
         ks = other.ks;
         shininess = other.shininess;
@@ -87,7 +93,8 @@ float4 Phong::Shading() const {
 
     if( mainTexture ) {
         // use texture color if has texture
-        albedo = mainTexture->GetColor( uv.x, uv.y );
+        albedo = Texture::Sample( mainTexture,
+                                  uv * mainTextureScale + mainTextureOffset );
     }
 
     float cos = saturate( dot( light, normal ) );

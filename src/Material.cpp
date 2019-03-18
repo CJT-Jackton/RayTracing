@@ -22,18 +22,24 @@ Material::Material( Shader* shader ) :
         Object{ "Default-Material" },
         shader{ shader },
         color{ 0.8f, 0.8f, 0.8f, 1.0f },
-        mainTexture{ nullptr } {
+        mainTexture{ nullptr },
+        mainTextureOffset{ float2( 0.0f ) },
+        mainTextureScale{ float2( 1.0f ) } {
     if( shader->Type() == Shader::Phong ) {
         Phong* pshader = ( Phong* ) shader;
         pshader->mainColor = color;
         pshader->specularColor = color;
         pshader->mainTexture = mainTexture;
+        pshader->mainTextureOffset = mainTextureOffset;
+        pshader->mainTextureScale = mainTextureScale;
     } else if( shader->Type() == Shader::BlinnPhong ) {
         BlinnPhong* bshader = ( BlinnPhong* ) shader;
 
         bshader->mainColor = color;
         bshader->specularColor = color;
         bshader->mainTexture = mainTexture;
+        bshader->mainTextureOffset = mainTextureOffset;
+        bshader->mainTextureScale = mainTextureScale;
     }
 }
 
@@ -50,23 +56,27 @@ Material::~Material() {
  * @param type the type of shader
  */
 void Material::UseShader( Shader::ShaderType type ) {
-    if( type != shader->Type() ) {
-        delete shader;
+    //if( type != shader->Type() ) {
+    delete shader;
 
-        if( type == Shader::Phong ) {
-            shader = new Phong();
-            Phong* pshader = ( Phong* ) shader;
+    if( type == Shader::Phong ) {
+        shader = new Phong();
+        Phong* pshader = ( Phong* ) shader;
 
-            pshader->mainColor = color;
-            pshader->specularColor = color;
-            pshader->mainTexture = mainTexture;
-        } else if( type == Shader::BlinnPhong ) {
-            shader = new BlinnPhong();
-            BlinnPhong* bshader = ( BlinnPhong* ) shader;
+        pshader->mainColor = color;
+        pshader->specularColor = color;
+        pshader->mainTexture = mainTexture;
+        pshader->mainTextureOffset = mainTextureOffset;
+        pshader->mainTextureScale = mainTextureScale;
+    } else if( type == Shader::BlinnPhong ) {
+        shader = new BlinnPhong();
+        BlinnPhong* bshader = ( BlinnPhong* ) shader;
 
-            bshader->mainColor = color;
-            bshader->specularColor = color;
-            bshader->mainTexture = mainTexture;
-        }
+        bshader->mainColor = color;
+        bshader->specularColor = color;
+        bshader->mainTexture = mainTexture;
+        bshader->mainTextureOffset = mainTextureOffset;
+        bshader->mainTextureScale = mainTextureScale;
     }
+    //}
 }

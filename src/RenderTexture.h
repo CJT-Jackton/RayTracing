@@ -28,8 +28,6 @@ namespace RayTracer {
          */
         RenderTexture( int w, int h );
 
-        float4 GetColor( float u, float v ) const;
-
         /**
          * Read the color buffer.
          *

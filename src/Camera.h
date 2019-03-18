@@ -44,7 +44,13 @@ namespace RayTracer {
                           std::vector< Primitive* >& primitives,
                           std::vector< Light* >& lights );
 
+        void RenderRay( const Ray& ray, float4& color, float& depth,
+                        const std::vector< Primitive* >& primitives,
+                        const std::vector< Light* >& lights );
+
     public:
+        bool allowMSAA;
+
         /** the aspect ratio (width divided by height) */
         const float& aspect;
 

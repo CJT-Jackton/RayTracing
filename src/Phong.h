@@ -80,6 +80,12 @@ namespace RayTracer {
         /** the texture */
         Texture* mainTexture;
 
+        /** the texture offset */
+        float2 mainTextureOffset;
+
+        /** the texture scale */
+        float2 mainTextureScale;
+
         /** diffuse reflection factor */
         float kd;
 

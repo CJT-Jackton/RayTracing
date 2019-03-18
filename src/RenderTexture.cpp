@@ -26,15 +26,6 @@ RenderTexture::RenderTexture( int w, int h ) :
         depthBuffer{ w * h * 4, 0 } {
 }
 
-float4 RenderTexture::GetColor( float u, float v ) const {
-    int x, y;
-
-    x = ( int ) ( u * width );
-    y = ( int ) ( v * height );
-
-    return ReadColorBuffer( x, y );
-}
-
 /**
  * Read the color buffer.
  *

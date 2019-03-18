@@ -27,6 +27,7 @@ Camera::Camera() :
         _aspect{ Screen::width / ( float ) Screen::height },
         pixelWidth{ _pixelWidth },
         pixelHeight{ _pixelHeight },
+        allowMSAA{ false },
         aspect{ _aspect },
         backgroundColor{ 0.2f, 0.2f, 0.2f, 1.0f },
         focalLength{ 1.0f },
@@ -48,6 +49,7 @@ Camera::Camera( const Camera& other ) :
         _aspect{ other._aspect },
         pixelWidth{ _pixelWidth },
         pixelHeight{ _pixelHeight },
+        allowMSAA{ other.allowMSAA },
         aspect{ _aspect },
         backgroundColor{ other.backgroundColor },
         focalLength{ other.focalLength },
@@ -157,19 +159,67 @@ void Camera::RenderPixel( int x, int y,
                   pixelUnitWidth * 0.5f,
                   -y * pixelUnitHeight + filmPlaneHeight * 0.5f -
                   pixelUnitHeight * 0.5f,
-                  focalLength
-    );
+                  focalLength );
 
-    if( x == 477 && y == 247 ) {
-        x = 477;
+    float4 finalColor( 0.0f );
+    float depth = 0;
+
+    if( !allowMSAA ) {
+        Ray ray = ViewportPointToRay( point );
+        RenderRay( ray, finalColor, depth, primitives, lights );
+
+    } else {
+        float3 samplingPoints[4];
+
+        // 4-rooks pattern
+        samplingPoints[ 0 ] = point + float3( 0.125f * pixelUnitWidth,
+                                              0.375f * pixelUnitHeight,
+                                              0.0f );
+        samplingPoints[ 1 ] = point + float3( 0.375f * pixelUnitWidth,
+                                              -0.125f * pixelUnitHeight,
+                                              0.0f );
+        samplingPoints[ 2 ] = point + float3( -0.125f * pixelUnitWidth,
+                                              -0.375f * pixelUnitHeight,
+                                              0.0f );
+        samplingPoints[ 3 ] = point + float3( -0.375f * pixelUnitWidth,
+                                              0.125f * pixelUnitHeight,
+                                              0.0f );
+
+        for( const float3& samplingPoint : samplingPoints ) {
+            float4 subColor;
+            float subDepth;
+
+            Ray ray = ViewportPointToRay( samplingPoint );
+            RenderRay( ray, subColor, subDepth, primitives, lights );
+
+            finalColor += 0.25f * subColor;
+            depth += 0.25f * subDepth;
+        }
     }
 
-    Ray ray = ViewportPointToRay( point );
+    targetTexture.WriteDepthBuffer( x, y, depth, 110 );
+    targetTexture.WriteColorBuffer( x, y, finalColor );
+}
+
+void Camera::RenderBlock( int start, int end,
+                          std::vector< Primitive* >& primitives,
+                          std::vector< Light* >& lights ) {
+    for( int i = start; i < end; ++i ) {
+        int x = i % pixelWidth;
+        int y = i / pixelWidth;
+
+        RenderPixel( x, y, primitives, lights );
+    }
+}
+
+void Camera::RenderRay( const Ray& ray, float4& color, float& depth,
+                        const std::vector< Primitive* >& primitives,
+                        const std::vector< Light* >& lights ) {
     RaycastHit hit;
     RaycastHit hitInfo;
 
     float4 finalColor = backgroundColor;
-    float depth = farClipPlane;
+    depth = farClipPlane;
     int nearestIndex = -1;
 
     for( unsigned int i = 0; i < primitives.size(); ++i ) {
@@ -209,7 +259,6 @@ void Camera::RenderPixel( int x, int y,
             if( shader->Type() == Shader::Phong ) {
                 Phong pshader = Phong( ( const Phong& ) *shader );
 
-//                pshader.view = -normalize( hit.point );
                 pshader.view = -ray.direction;
                 pshader.normal = hit.normal;
                 pshader.light = shadowRay.direction;
@@ -236,10 +285,6 @@ void Camera::RenderPixel( int x, int y,
         }
     }
 
-//    depth /= farClipPlane;
-//    depth = 1.0f - depth;
-//    depth = farClipPlane - depth;
-
     depth = ( 1 / depth - 1 / nearClipPlane ) /
             ( 1 / farClipPlane - 1 / nearClipPlane );
 
@@ -248,23 +293,7 @@ void Camera::RenderPixel( int x, int y,
 
     depth = 1.0f - depth;
 
-//    depth = logf( 1 * depth + 1 ) / logf( 1 * farClipPlane + 1 ) *
-//            depth;
-
-    targetTexture.WriteDepthBuffer( x, y, depth, 110 );
-    targetTexture.WriteColorBuffer( x, y, finalColor );
-//    targetTexture.WriteColorBuffer( x, y, float4( normal, 1.0f ) );
-}
-
-void Camera::RenderBlock( int start, int end,
-                          std::vector< Primitive* >& primitives,
-                          std::vector< Light* >& lights ) {
-    for( int i = start; i < end; ++i ) {
-        int x = i % pixelWidth;
-        int y = i / pixelWidth;
-
-        RenderPixel( x, y, primitives, lights );
-    }
+    color = finalColor;
 }
 
 Ray Camera::ViewportPointToRay( float3 position ) const {
