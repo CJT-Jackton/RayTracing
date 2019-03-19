@@ -71,6 +71,11 @@ namespace RayTracer {
          */
         void LoadRawTextureData( BYTE* data );
 
+        /**
+         * Read the texture from a png file.
+         *
+         * @param filename the file name
+         */
         void ReadTextureFromPNG( const std::string& filename);
 
         /**
@@ -88,6 +93,7 @@ namespace RayTracer {
         BYTE* GetNativeTexturePtr() const override;
 
     public:
+        /** the format of the pixel data in the texture */
         const TextureFormat format;
 
     private:

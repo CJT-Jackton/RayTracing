@@ -38,64 +38,72 @@
 #endif
 
 namespace RayTracer {
-    extern int THREAD_NUMBER;
+	extern int THREAD_NUMBER;
 
-    typedef unsigned char BYTE;
-    typedef unsigned int png_uint_32;
+	typedef unsigned char BYTE;
+	typedef unsigned int png_uint_32;
 
-    /**
-     * Union of float and 4-byte.
-     */
-    union floatBYTE {
-        float f;
-        BYTE byte[4];
-    };
+	/**
+	 * Union of float and 4-byte.
+	 */
+	union floatBYTE {
+		float f;
+		BYTE byte[4];
+	};
 
-    class BlinnPhong;
+	class BlinnPhong;
 
-    class Camera;
+	class Camera;
 
-    class Component;
+	class Checkerboard2D;
 
-    class GameObject;
+	class Component;
 
-    class Light;
+	class GameObject;
 
-    class Material;
+	class Light;
 
-    class Mesh;
+	class Material;
 
-    class Object;
+	class Mesh;
 
-    class Phong;
+	class Object;
 
-    class Primitive;
+	class PerlinNoise;
 
-    class Ray;
+	class Phong;
 
-    struct RaycastHit;
+	class Primitive;
 
-    struct RenderBuffer;
+	class ProceduralTexture;
 
-    class Renderer;
+	class Ray;
 
-    class RenderTexture;
+	struct RaycastHit;
 
-    class Scene;
+	struct RenderBuffer;
 
-    class Screen;
+	class Renderer;
 
-    class Shader;
+	class RenderTexture;
 
-    class Sphere;
+	class Scene;
 
-    class Texture;
+	class Screen;
 
-    class Texture2D;
+	class Shader;
 
-    class Transform;
+	class Skybox_Procedural
 
-    class Triangle;
+	class Sphere;
+
+	class Texture;
+
+	class Texture2D;
+
+	class Transform;
+
+	class Triangle;
 
 } // RayTracer
 
@@ -113,9 +121,13 @@ namespace RayTracer {
 #include "RenderBuffer.h"
 #include "RenderTexture.h"
 #include "Texture2D.h"
+#include "ProceduralTexture.h"
+#include "Checkerboard2D.h"
+#include "PerlinNoise.h"
 #include "Shader.h"
 #include "Phong.h"
 #include "BlinnPhong.h"
+#include "Skybox-Procedural.h"
 #include "Material.h"
 #include "Transform.h"
 #include "Renderer.h"

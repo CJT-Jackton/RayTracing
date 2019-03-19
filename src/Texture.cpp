@@ -10,6 +10,8 @@
 
 using RayTracer::Texture;
 using RayTracer::Texture2D;
+using RayTracer::Checkerboard2D;
+using RayTracer::PerlinNoise;
 
 /**
  * Create a Texture with given size.
@@ -36,15 +38,16 @@ float4 Texture::Sample( Texture* texture, float2 location ) {
     float4 color = float4( 0.0f );
 
     if( Texture2D* tex2d = dynamic_cast<Texture2D*>(texture) ) {
+        // 2D texture
         float u = location.x;
         float v = location.y;
 
         if( u < 0.0f || u > 1.0f || v < 0.0f || v > 1.0f ) {
-            if( tex2d->wrapMode == TextureWrapMode::Repeat ) {
+            if( texture->wrapMode == TextureWrapMode::Repeat ) {
                 // location = fmod( location, 1.0f );
                 u = fmod( u, 1.0f );
                 v = fmod( v, 1.0f );
-            } else if( tex2d->wrapMode == TextureWrapMode::Clamp ) {
+            } else if( texture->wrapMode == TextureWrapMode::Clamp ) {
                 // location = saturate( location );
                 u = u < 0.0f ? 0.0f : u;
                 u = u > 1.0f ? 1.0f : u;
@@ -57,7 +60,7 @@ float4 Texture::Sample( Texture* texture, float2 location ) {
         // vertical flip
         v = 1.0f - v;
 
-        if( tex2d->filterMode == FilterMode::Point ) {
+        if( texture->filterMode == FilterMode::Point ) {
             float x = u * tex2d->width;
             float y = v * tex2d->height;
 
@@ -66,7 +69,7 @@ float4 Texture::Sample( Texture* texture, float2 location ) {
 
             color = tex2d->GetPixel( ( int ) round( x ), ( int ) round( y ) );
 
-        } else if( tex2d->filterMode == FilterMode::Bilinear ) {
+        } else if( texture->filterMode == FilterMode::Bilinear ) {
             float x = u * tex2d->width;
             float y = v * tex2d->height;
 
@@ -88,6 +91,34 @@ float4 Texture::Sample( Texture* texture, float2 location ) {
             color += a21 * tex2d->GetPixel( q21.x, q21.y );
             color += a22 * tex2d->GetPixel( q22.x, q22.y );
         }
+    } else if( Checkerboard2D* c2d = dynamic_cast<Checkerboard2D*>(texture) ) {
+        // checkerboard procedural texture
+        float u = location.x;
+        float v = location.y;
+
+        if( u < 0.0f || u > 1.0f || v < 0.0f || v > 1.0f ) {
+            if( texture->wrapMode == TextureWrapMode::Repeat ) {
+                // location = fmod( location, 1.0f );
+                u = fmod( u, 1.0f );
+                v = fmod( v, 1.0f );
+            } else if( texture->wrapMode == TextureWrapMode::Clamp ) {
+                // location = saturate( location );
+                u = u < 0.0f ? 0.0f : u;
+                u = u > 1.0f ? 1.0f : u;
+
+                v = v < 0.0f ? 0.0f : v;
+                v = v > 1.0f ? 1.0f : v;
+            }
+        }
+
+        // vertical flip
+        v = 1.0f - v;
+
+        color = c2d->GetColor( float2( u, v ) );
+
+    } else if( PerlinNoise* perlin = dynamic_cast<PerlinNoise*>(texture) ) {
+        // perlin noise texture
+        color = perlin->GetColor( location );
     }
 
     return color;

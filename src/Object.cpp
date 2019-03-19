@@ -17,7 +17,7 @@ int Object::NEXT_ID = 0;
  */
 Object::Object() :
         id{ NEXT_ID++ },
-        name{ "Object " + id } {
+        name{ "Unnamed Object" } {
 }
 
 /**

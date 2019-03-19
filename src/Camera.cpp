@@ -164,6 +164,10 @@ void Camera::RenderPixel( int x, int y,
     float4 finalColor( 0.0f );
     float depth = 0;
 
+	if (x == 397 && y == 530) {
+		x = 397;
+	}
+
     if( !allowMSAA ) {
         Ray ray = ViewportPointToRay( point );
         RenderRay( ray, finalColor, depth, primitives, lights );

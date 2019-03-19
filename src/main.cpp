@@ -19,8 +19,17 @@ int main() {
 
     std::chrono::time_point scene_start = std::chrono::high_resolution_clock::now();
 
-    Screen::SetResolution( 3200, 2400 );
+    Screen::SetResolution( 800, 600 );
     Scene scene( "RayTracingScene" );
+
+    Checkerboard2D* checkerboard2D = new Checkerboard2D();
+    checkerboard2D->filterMode = Texture::FilterMode::Bilinear;
+    checkerboard2D->mainColor = float4( 0.3f, 0.3f, 0.3f, 1.0f );
+    checkerboard2D->secondaryColor = float4( 0.67f, 0.67f, 0.67f, 1.0f );
+
+    PerlinNoise* perlinNoise = new PerlinNoise();
+    perlinNoise->mainColor = float4( 1.0f, 0.0f, 0.0f, 1.0f );
+    perlinNoise->secondaryColor = float4( 1.0f, 1.0f, 0.0f, 1.0f );
 
 //    SceneSetUp( scene );
     GameObject floor = GameObject( "Floor" );
@@ -30,12 +39,12 @@ int main() {
 
     Texture2D* tiger = new Texture2D( 500, 500 );
     tiger->ReadTextureFromPNG( "Textures/tiger_head_3.png" );
-    tiger->filterMode = Texture::FilterMode::Point;
+    tiger->filterMode = Texture::FilterMode::Bilinear;
 
     std::shared_ptr< Material > M_Floor{ new Material( new Phong() ) };
     M_Floor->color = float4( 0.7f, 0.7f, 0.7f, 1.0f );
-    M_Floor->mainTexture = ( Texture* ) tiger;
-    M_Floor->mainTextureScale = float2( 4.0f, 4.0f );
+    M_Floor->mainTexture = ( Texture* ) checkerboard2D;
+    M_Floor->mainTextureScale = float2( 8.0f, 16.0f );
 
     renderer3->material = M_Floor;
 //    renderer3->GetMaterial()->color = float4( 0.7f, 0.7f, 0.7f, 1.0f );

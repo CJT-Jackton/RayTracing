@@ -93,6 +93,11 @@ void Texture2D::LoadRawTextureData( BYTE* data ) {
     rawData = std::vector< BYTE >{ data, data + ( width * height * 4 ) };
 }
 
+/**
+ * Read the texture from a png file.
+ *
+ * @param filename the file name
+ */
 void Texture2D::ReadTextureFromPNG( const std::string& filename ) {
     png::image< png::basic_rgba_pixel< BYTE > > image( filename );
     png::pixel_buffer< png::basic_rgba_pixel< BYTE >> pixbuf = image.get_pixbuf();
