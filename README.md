@@ -123,7 +123,7 @@ The checkerboard 2D procedural texture is pretty straightforward. If the sample 
 
 #### Perlin noise
 
-Perlin noise is a type of gradient noise developed by Ken Perlin in 1983[[1](https://dl.acm.org/citation.cfm?doid=325165.325247)]. This program use a improved version of Perlin noise[[2](https://mrl.nyu.edu/~perlin/paper445.pdf)] written by Ken Perlin himself. The Java implementation can be found [here](https://cs.nyu.edu/~perlin/noise/).
+Perlin noise is a type of gradient noise developed by Ken Perlin in 1983[[1](https://dl.acm.org/citation.cfm?doid=325165.325247)]. This program use a improved version of Perlin noise[[2](https://mrl.nyu.edu/~perlin/paper445.pdf)]. The Java implementation written by Ken Perlin himself can be found [here](https://cs.nyu.edu/~perlin/noise/).
 
 ![Perlin noise](https://raw.githubusercontent.com/CJT-Jackton/RayTracing/master/Screenshots/Procedural_Texture_Perlin_Noise.png "Procedural Texture Perlin Noise")
     *Perlin noise on the plane*
