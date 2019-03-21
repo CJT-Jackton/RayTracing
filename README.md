@@ -106,6 +106,20 @@ View from another angle.
 
 Without color.
 
+## Texture
+
+![Texture](https://raw.githubusercontent.com/CJT-Jackton/RayTracing/master/Screenshots/Texture_Bilinear.png "Texture mapping")
+
+### Procedural Texture
+
+#### Checkerboard 2D
+
+![Checkerboard 2D](https://raw.githubusercontent.com/CJT-Jackton/RayTracing/master/Screenshots/Procedural_Texture_Checkerboard2D.png "Procedural Texture Checkerboard2D")
+
+#### Perlin noise
+
+![Perlin noise](https://raw.githubusercontent.com/CJT-Jackton/RayTracing/master/Screenshots/Procedural_Texture_Perlin_Noise.png "Procedural Texture Perlin Noise")
+
 ## Anti-aliasing
 
 Multisample anti-aliasing with 4 rays per pixel.
