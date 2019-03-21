@@ -22,14 +22,18 @@ int main() {
     Screen::SetResolution( 800, 600 );
     Scene scene( "RayTracingScene" );
 
+    std::shared_ptr< Material > defaultSkybox{
+            new Material( new Skybox_Procedural() ) };
+    scene.renderSettings.skybox = defaultSkybox;
+
     Checkerboard2D* checkerboard2D = new Checkerboard2D();
     checkerboard2D->filterMode = Texture::FilterMode::Bilinear;
-    checkerboard2D->mainColor = float4( 0.3f, 0.3f, 0.3f, 1.0f );
+    checkerboard2D->mainColor = float4( 0.2f, 0.2f, 0.2f, 1.0f );
     checkerboard2D->secondaryColor = float4( 0.67f, 0.67f, 0.67f, 1.0f );
 
     PerlinNoise* perlinNoise = new PerlinNoise();
-    perlinNoise->mainColor = float4( 1.0f, 0.0f, 0.0f, 1.0f );
-    perlinNoise->secondaryColor = float4( 1.0f, 1.0f, 0.0f, 1.0f );
+    perlinNoise->mainColor = float4( 1.0f, 1.0f, 1.0f, 1.0f );
+    perlinNoise->secondaryColor = float4( 0.0f, 0.0f, 0.0f, 1.0f );
 
 //    SceneSetUp( scene );
     GameObject floor = GameObject( "Floor" );
@@ -146,6 +150,9 @@ int main() {
     cube.GetComponent< Transform >()->Translate( -1.51f, 1.94f, -6.708f );
     cube.GetComponent< Transform >()->Rotate( 8.8f, -13.88f, 0.0f );
 
+//    floor.SetActive( false );
+//    sphere1.SetActive( false );
+//    sphere2.SetActive( false );
     cube.SetActive( false );
 
     Renderer* renderer4 = cube.AddComponent< Renderer >();
@@ -203,6 +210,9 @@ int main() {
 //    dLight.SetActive( false );
     dLight2.SetActive( false );
     pLight.SetActive( false );
+
+    // use the directional light as sun
+    scene.renderSettings.sun = light;
 
     // Cameras
     Camera camera1;

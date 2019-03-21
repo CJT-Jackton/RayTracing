@@ -85,6 +85,8 @@ namespace RayTracer {
 
 	class Renderer;
 
+	class RenderSettings;
+
 	class RenderTexture;
 
 	class Scene;
@@ -93,7 +95,7 @@ namespace RayTracer {
 
 	class Shader;
 
-	class Skybox_Procedural
+	class Skybox_Procedural;
 
 	class Sphere;
 
@@ -111,6 +113,7 @@ namespace RayTracer {
 #include "Component.h"
 #include "Scene.h"
 #include "Screen.h"
+#include "RenderSettings.h"
 #include "RaycastHit.h"
 #include "Ray.h"
 #include "Primitive.h"

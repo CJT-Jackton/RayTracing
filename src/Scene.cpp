@@ -16,6 +16,7 @@ using RayTracer::GameObject;
  */
 Scene::Scene() :
         name{ "SampleScene" },
+        renderSettings{},
         rootGameObjects{},
         rootCount{ rootGameObjects.size() } {
 }
@@ -27,6 +28,7 @@ Scene::Scene() :
  */
 Scene::Scene( std::string name ) :
         name{ std::move( name ) },
+        renderSettings{},
         rootGameObjects{},
         rootCount{ rootGameObjects.size() } {
 }

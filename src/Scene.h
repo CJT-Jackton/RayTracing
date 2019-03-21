@@ -9,7 +9,8 @@
 #ifndef SCENE_H
 #define SCENE_H
 
-#include "pch.h"
+#include "GameObject.h"
+#include "RenderSettings.h"
 
 namespace RayTracer {
     /**
@@ -58,6 +59,9 @@ namespace RayTracer {
     public:
         /** the name of the scene */
         const std::string name;
+
+        /** the render settings of the scene */
+        RenderSettings renderSettings;
 
     }; // Scene
 } // RayTracer

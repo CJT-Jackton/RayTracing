@@ -164,9 +164,9 @@ void Camera::RenderPixel( int x, int y,
     float4 finalColor( 0.0f );
     float depth = 0;
 
-	if (x == 397 && y == 530) {
-		x = 397;
-	}
+    if( x == 400 && y == 150 ) {
+        x = 400;
+    }
 
     if( !allowMSAA ) {
         Ray ray = ViewportPointToRay( point );
@@ -287,15 +287,36 @@ void Camera::RenderRay( const Ray& ray, float4& color, float& depth,
                 finalColor += bshader.Shading();
             }
         }
+    } else {
+        if( _scene->renderSettings.skybox ) {
+            std::shared_ptr< Material > M_Skybox = _scene->renderSettings.skybox;
+
+            if( M_Skybox->shader->Type() == Shader::Skybox_Procedural ) {
+                Skybox_Procedural skyshader = Skybox_Procedural(
+                        ( const Skybox_Procedural& ) *M_Skybox->shader );
+
+                if( _scene->renderSettings.sun ) {
+                    skyshader._SunDirection =
+                            -_scene->renderSettings.sun->gameObject->transform->forward;
+                    skyshader._SunColor = _scene->renderSettings.sun->color.xyz;
+                }
+
+                skyshader.viewRay = mul(
+                        inverse( transpose( _cameraToWorldMatrix ) ),
+                        float4( ray.direction, 1.0f ) ).xyz;
+
+                finalColor = skyshader.Shading();
+            }
+        }
     }
 
-    depth = ( 1 / depth - 1 / nearClipPlane ) /
-            ( 1 / farClipPlane - 1 / nearClipPlane );
-
-    depth = depth > 1.0f ? 1.0f : depth;
-    depth = depth < 0.0f ? 0.0f : depth;
-
-    depth = 1.0f - depth;
+//    depth = ( 1 / depth - 1 / nearClipPlane ) /
+//            ( 1 / farClipPlane - 1 / nearClipPlane );
+//
+//    depth = depth > 1.0f ? 1.0f : depth;
+//    depth = depth < 0.0f ? 0.0f : depth;
+//
+//    depth = 1.0f - depth;
 
     color = finalColor;
 }

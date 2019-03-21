@@ -22,7 +22,8 @@ namespace RayTracer {
          */
         enum ShaderType {
             Phong,
-            BlinnPhong
+            BlinnPhong,
+            Skybox_Procedural
         };
 
         /**
