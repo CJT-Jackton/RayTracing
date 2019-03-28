@@ -9,7 +9,7 @@
 #ifndef BLINNPHONG_H
 #define BLINNPHONG_H
 
-#include "pch.h"
+#include "../pch.h"
 
 namespace RayTracer {
     /**

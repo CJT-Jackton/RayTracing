@@ -37,75 +37,90 @@
 
 #endif
 
+namespace hlslpp {
+    hlslpp_inline float3 refract( const float3& i, const float3& n,
+                                  const float1& k ) {
+        float1 t = 1.0f - k * k * ( 1.0f - dot( n, i ) * dot( n, i ) );
+        if( t.x < 0.0f )
+            return float3( 0.0f );
+        else
+            return k * i - ( k * dot( n, i ) + sqrt( t ) ) * n;
+    }
+}
+
 namespace RayTracer {
-	extern int THREAD_NUMBER;
+    extern int THREAD_NUMBER;
 
-	typedef unsigned char BYTE;
-	typedef unsigned int png_uint_32;
+    typedef unsigned char BYTE;
+    typedef unsigned int png_uint_32;
 
-	/**
-	 * Union of float and 4-byte.
-	 */
-	union floatBYTE {
-		float f;
-		BYTE byte[4];
-	};
+    /**
+     * Union of float and 4-byte.
+     */
+    union floatBYTE {
+        float f;
+        BYTE byte[4];
+    };
 
-	class BlinnPhong;
+    class BlinnPhong;
 
-	class Camera;
+    class Camera;
 
-	class Checkerboard2D;
+    class Checkerboard2D;
 
-	class Component;
+    class Component;
 
-	class GameObject;
+    class Cook_Torrance;
 
-	class Light;
+    class GameObject;
 
-	class Material;
+    class Light;
 
-	class Mesh;
+    class Material;
 
-	class Object;
+    class Mesh;
 
-	class PerlinNoise;
+    class Object;
 
-	class Phong;
+    class PerlinNoise;
 
-	class Primitive;
+    class Phong;
 
-	class ProceduralTexture;
+    class Primitive;
 
-	class Ray;
+    class ProceduralTexture;
 
-	struct RaycastHit;
+    class Ray;
 
-	struct RenderBuffer;
+    struct RaycastHit;
 
-	class Renderer;
+    struct RenderBuffer;
 
-	class RenderSettings;
+    class Renderer;
 
-	class RenderTexture;
+    class RenderSettings;
 
-	class Scene;
+    class RenderTexture;
 
-	class Screen;
+    class Scene;
 
-	class Shader;
+    class Screen;
 
-	class Skybox_Procedural;
+    class Shader;
 
-	class Sphere;
+    class Skybox_Procedural;
 
-	class Texture;
+    class Sphere;
 
-	class Texture2D;
+    class Texture;
 
-	class Transform;
+    class Texture2D;
 
-	class Triangle;
+    class Transform;
+
+    class Triangle;
+
+    class Unlit;
 
 } // RayTracer
 
@@ -127,10 +142,12 @@ namespace RayTracer {
 #include "ProceduralTexture.h"
 #include "Checkerboard2D.h"
 #include "PerlinNoise.h"
-#include "Shader.h"
-#include "Phong.h"
-#include "BlinnPhong.h"
-#include "Skybox-Procedural.h"
+#include "Shader/Shader.h"
+#include "Shader/Phong.h"
+#include "Shader/BlinnPhong.h"
+#include "Shader/Cook-Torrance.h"
+#include "Shader/Skybox-Procedural.h"
+#include "Shader/Unlit.h"
 #include "Material.h"
 #include "Transform.h"
 #include "Renderer.h"

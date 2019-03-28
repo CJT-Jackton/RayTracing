@@ -25,13 +25,16 @@ Material::Material( Shader* shader ) :
         mainTexture{ nullptr },
         mainTextureOffset{ float2( 0.0f ) },
         mainTextureScale{ float2( 1.0f ) } {
+
     if( shader->Type() == Shader::Phong ) {
         Phong* pshader = ( Phong* ) shader;
+
         pshader->mainColor = color;
         pshader->specularColor = color;
         pshader->mainTexture = mainTexture;
         pshader->mainTextureOffset = mainTextureOffset;
         pshader->mainTextureScale = mainTextureScale;
+
     } else if( shader->Type() == Shader::BlinnPhong ) {
         BlinnPhong* bshader = ( BlinnPhong* ) shader;
 
@@ -40,6 +43,19 @@ Material::Material( Shader* shader ) :
         bshader->mainTexture = mainTexture;
         bshader->mainTextureOffset = mainTextureOffset;
         bshader->mainTextureScale = mainTextureScale;
+
+    } else if( shader->Type() == Shader::Cook_Torrance ) {
+        Cook_Torrance* cshader = ( Cook_Torrance* ) shader;
+
+        cshader->mainColor = color;
+        cshader->mainTexture = mainTexture;
+        cshader->mainTextureOffset = mainTextureOffset;
+        cshader->mainTextureScale = mainTextureScale;
+
+    } else if( shader->Type() == Shader::Unlit ) {
+        Unlit* ushader = ( Unlit* ) shader;
+
+        ushader->mainColor = color;
     }
 }
 
@@ -68,6 +84,7 @@ void Material::UseShader( Shader::ShaderType type ) {
         pshader->mainTexture = mainTexture;
         pshader->mainTextureOffset = mainTextureOffset;
         pshader->mainTextureScale = mainTextureScale;
+
     } else if( type == Shader::BlinnPhong ) {
         shader = new BlinnPhong();
         BlinnPhong* bshader = ( BlinnPhong* ) shader;
@@ -77,6 +94,24 @@ void Material::UseShader( Shader::ShaderType type ) {
         bshader->mainTexture = mainTexture;
         bshader->mainTextureOffset = mainTextureOffset;
         bshader->mainTextureScale = mainTextureScale;
+
+    } else if( type == Shader::Cook_Torrance ) {
+        shader = new Cook_Torrance();
+        Cook_Torrance* cshader = ( Cook_Torrance* ) shader;
+
+        cshader->mainColor = color;
+        cshader->mainTexture = mainTexture;
+        cshader->mainTextureOffset = mainTextureOffset;
+        cshader->mainTextureScale = mainTextureScale;
+
+    } else if( type == Shader::Skybox_Procedural ) {
+        shader = new Skybox_Procedural();
+
+    } else if( type == Shader::Unlit ) {
+        shader = new Unlit();
+        Unlit* ushader = ( Unlit* ) shader;
+
+        ushader->mainColor = color;
     }
     //}
 }

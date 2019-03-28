@@ -11,7 +11,7 @@
 
 #include "pch.h"
 #include "Object.h"
-#include "Shader.h"
+#include "Shader/Shader.h"
 #include "Texture.h"
 
 namespace RayTracer {

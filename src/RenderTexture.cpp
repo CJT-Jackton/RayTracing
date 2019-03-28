@@ -46,8 +46,9 @@ float4 RenderTexture::ReadColorBuffer( int x, int y ) const {
                        colorBufferData[ 4 * ( y * width + x ) + 3 ] );
     }
 
-    float4 color = float4( colori.r / 255.0f, colori.g / 255.0f,
-                           colori.b / 255.0f, colori.a / 255.0f );
+//    float4 color = float4( colori.r / 255.0f, colori.g / 255.0f,
+//                           colori.b / 255.0f, colori.a / 255.0f );
+    float4 color = float4( colori ) / float4( 255.0f );
 
     return color;
 }
@@ -111,14 +112,14 @@ void RenderTexture::WriteColorBuffer( int x, int y, float4 color ) {
 //#endif
 
         float4 c = float4( ACESFilm( color.rgb ), 1.0f );
-//        float4 c = color;
+        c *= 256.0f;
 
         BYTE* colorBufferData = colorBuffer.GetNativeRenderBufferPtr();
 
-        int r = ( c.r * 256 == 256 ) ? 255 : c.r * 256;
-        int g = ( c.g * 256 == 256 ) ? 255 : c.g * 256;
-        int b = ( c.b * 256 == 256 ) ? 255 : c.b * 256;
-        int a = ( c.a * 256 == 256 ) ? 255 : c.a * 256;
+        int r = ( c.r == 256.0f ) ? 255 : int( c.r );
+        int g = ( c.g == 256.0f ) ? 255 : int( c.g );
+        int b = ( c.b == 256.0f ) ? 255 : int( c.b );
+        int a = ( c.a == 256.0f ) ? 255 : int( c.a );
 
         colorBufferData[ 4 * ( y * width + x ) + 0 ] = ( BYTE ) r;
         colorBufferData[ 4 * ( y * width + x ) + 1 ] = ( BYTE ) g;

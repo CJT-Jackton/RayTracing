@@ -9,7 +9,7 @@
 #ifndef PHONG_H
 #define PHONG_H
 
-#include "pch.h"
+#include "../pch.h"
 
 namespace RayTracer {
     /**

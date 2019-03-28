@@ -6,7 +6,7 @@
 // Created by Jietong Chen on 2/19/2019.
 //
 
-#include "pch.h"
+#include "../pch.h"
 
 using RayTracer::BlinnPhong;
 using RayTracer::Shader;

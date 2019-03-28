@@ -61,10 +61,12 @@ float4 Texture2D::GetPixel( int x, int y ) const {
  */
 void Texture2D::SetPixel( int x, int y, float3 color ) {
     if( x >= 0 && x < width && y >= 0 && y < height ) {
-        rawData[ 4 * ( y * width + x ) + 0 ] = ( BYTE ) ( color.r * 255 );
-        rawData[ 4 * ( y * width + x ) + 1 ] = ( BYTE ) ( color.g * 255 );
-        rawData[ 4 * ( y * width + x ) + 2 ] = ( BYTE ) ( color.b * 255 );
-        rawData[ 4 * ( y * width + x ) + 3 ] = ( BYTE ) ( 1.0f * 255 );
+        color *= 255.0f;
+
+        rawData[ 4 * ( y * width + x ) + 0 ] = ( BYTE ) color.r;
+        rawData[ 4 * ( y * width + x ) + 1 ] = ( BYTE ) color.g;
+        rawData[ 4 * ( y * width + x ) + 2 ] = ( BYTE ) color.b;
+        rawData[ 4 * ( y * width + x ) + 3 ] = ( BYTE ) 255;
     }
 }
 
@@ -77,10 +79,12 @@ void Texture2D::SetPixel( int x, int y, float3 color ) {
  */
 void Texture2D::SetPixel( int x, int y, float4 color ) {
     if( x >= 0 && x < width && y >= 0 && y < height ) {
-        rawData[ 4 * ( y * width + x ) + 0 ] = ( BYTE ) ( color.r * 255 );
-        rawData[ 4 * ( y * width + x ) + 1 ] = ( BYTE ) ( color.g * 255 );
-        rawData[ 4 * ( y * width + x ) + 2 ] = ( BYTE ) ( color.b * 255 );
-        rawData[ 4 * ( y * width + x ) + 3 ] = ( BYTE ) ( color.a * 255 );
+        color *= 255.0f;
+
+        rawData[ 4 * ( y * width + x ) + 0 ] = ( BYTE ) color.r;
+        rawData[ 4 * ( y * width + x ) + 1 ] = ( BYTE ) color.g;
+        rawData[ 4 * ( y * width + x ) + 2 ] = ( BYTE ) color.b;
+        rawData[ 4 * ( y * width + x ) + 3 ] = ( BYTE ) color.a;
     }
 }
 

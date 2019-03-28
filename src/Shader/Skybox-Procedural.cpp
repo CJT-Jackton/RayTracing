@@ -6,7 +6,7 @@
 // Created by Jietong Chen on 2019/3/19.
 //
 
-#include "pch.h"
+#include "../pch.h"
 
 using RayTracer::Skybox_Procedural;
 using RayTracer::Shader;
@@ -169,9 +169,9 @@ Skybox_Procedural::v2f Skybox_Procedural::vert() const {
             float cameraAngle = dot( eyeRay, samplePoint ) / height;
             float1 scatter = ( startOffset + depth * ( scale( lightAngle ) -
                                                        scale( cameraAngle ) ) );
-            float3 attenuate = exp( -clamp( scatter, ( float1 ) 0.0f,
-                                            ( float1 ) kMAX_SCATTER ) *
-                                    ( kInvWavelength * kKr4PI + kKm4PI ) );
+            float3 attenuate = exp( float3( -clamp( scatter, ( float1 ) 0.0f,
+                                                    ( float1 ) kMAX_SCATTER ) )
+                                    * ( kInvWavelength * kKr4PI + kKm4PI ) );
 
             frontColor += attenuate * ( depth * scaledLength );
             samplePoint += sampleRay;
@@ -211,8 +211,8 @@ Skybox_Procedural::v2f Skybox_Procedural::vert() const {
             float depth = exp(
                     kScaleOverScaleDepth * ( kInnerRadius - height ) );
             float1 scatter = depth * temp - cameraOffset;
-            attenuate = exp( -clamp( scatter, ( float1 ) 0.0f,
-                                     ( float1 ) kMAX_SCATTER ) *
+            attenuate = exp( float3( -clamp( scatter, ( float1 ) 0.0f,
+                                             ( float1 ) kMAX_SCATTER ) ) *
                              ( kInvWavelength * kKr4PI + kKm4PI ) );
             frontColor += attenuate * ( depth * scaledLength );
             samplePoint += sampleRay;
@@ -255,12 +255,12 @@ float4 Skybox_Procedural::frag( Skybox_Procedural::v2f IN ) const {
     // if y >= 0 and < 1 [eyeRay.y <= 0 and > -SKY_GROUND_THRESHOLD] - horizon
     // if y < 0 [eyeRay.y > 0] - sky
     float3 ray = IN.vertex;
-    float y = ray.y / SKY_GROUND_THRESHOLD;
+    float1 y = ray.y / float1( SKY_GROUND_THRESHOLD );
 
     // if we did precalculate color in vprog: just do lerp between them
-    col = lerp( IN.skyColor, IN.groundColor, saturate( ( float1 ) y ) );
+    col = lerp( IN.skyColor, IN.groundColor, float3( saturate( y ) ) );
 
-    if( y < 0.0f ) {
+    if( ( float ) y < 0.0f ) {
         col += IN.sunColor *
                calcSunAttenuation( _SunDirection, -ray );
     }
@@ -288,7 +288,7 @@ float1 Skybox_Procedural::scale( float1 inCos ) const {
 
 float1 Skybox_Procedural::getMiePhase( float eyeCos, float eyeCos2 ) const {
     float1 temp = 1.0 + MIE_G2 - 2.0 * MIE_G * eyeCos;
-    temp = pow( temp, pow( _SunSize, 0.65f ) * 10 );
+    temp = pow( temp, float1( pow( _SunSize, 0.65f ) * 10 ) );
     temp = max( temp,
                 ( float1 ) 1.0e-4 ); // prevent division by zero, esp. in half precision
     temp = 1.5f * ( ( 1.0f - MIE_G2 ) / ( 2.0f + MIE_G2 ) ) *

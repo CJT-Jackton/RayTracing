@@ -70,8 +70,8 @@ float4 Texture::Sample( Texture* texture, float2 location ) {
             color = tex2d->GetPixel( ( int ) round( x ), ( int ) round( y ) );
 
         } else if( texture->filterMode == FilterMode::Bilinear ) {
-            float x = u * tex2d->width;
-            float y = v * tex2d->height;
+            float1 x = u * tex2d->width;
+            float1 y = v * tex2d->height;
 
             x -= 0.5f;
             y -= 0.5f;
@@ -81,15 +81,15 @@ float4 Texture::Sample( Texture* texture, float2 location ) {
             int2 q21 = q11 + int2( 1, 0 );
             int2 q22 = q11 + int2( 1, 1 );
 
-            float a11 = ( q22.x - x ) * ( q22.y - y );
-            float a12 = ( q21.x - x ) * ( y - q21.y );
-            float a21 = ( x - q12.x ) * ( q12.y - y );
-            float a22 = ( x - q11.x ) * ( y - q11.y );
+            float1 a11 = ( q22.x - x ) * ( q22.y - y );
+            float1 a12 = ( q21.x - x ) * ( y - q21.y );
+            float1 a21 = ( x - q12.x ) * ( q12.y - y );
+            float1 a22 = ( x - q11.x ) * ( y - q11.y );
 
-            color += a11 * tex2d->GetPixel( q11.x, q11.y );
-            color += a12 * tex2d->GetPixel( q12.x, q12.y );
-            color += a21 * tex2d->GetPixel( q21.x, q21.y );
-            color += a22 * tex2d->GetPixel( q22.x, q22.y );
+            color += ( float ) a11 * tex2d->GetPixel( q11.x, q11.y );
+            color += ( float ) a12 * tex2d->GetPixel( q12.x, q12.y );
+            color += ( float ) a21 * tex2d->GetPixel( q21.x, q21.y );
+            color += ( float ) a22 * tex2d->GetPixel( q22.x, q22.y );
         }
     } else if( Checkerboard2D* c2d = dynamic_cast<Checkerboard2D*>(texture) ) {
         // checkerboard procedural texture

@@ -9,7 +9,7 @@
 #ifndef SHADER_H
 #define SHADER_H
 
-#include "pch.h"
+#include "../pch.h"
 
 namespace RayTracer {
     /**
@@ -21,9 +21,11 @@ namespace RayTracer {
          * The type of shader.
          */
         enum ShaderType {
-            Phong,
             BlinnPhong,
-            Skybox_Procedural
+            Cook_Torrance,
+            Phong,
+            Skybox_Procedural,
+            Unlit
         };
 
         /**

@@ -60,10 +60,12 @@ bool Sphere::Intersect( Ray ray, RaycastHit& hit ) const {
     } else if( delta == 0 ) {
         distance = -B / 2.0f;
     } else {
-        if( ( -B - delta ) / 2.0f > 0 ) {
-            distance = ( -B - delta ) / 2.0f;
+        float w = ( -B - sqrt( delta ) ) / 2.0f;
+
+        if( w > 0 ) {
+            distance = w;
         } else {
-            distance = ( -B + delta ) / 2.0f;
+            distance = ( -B + sqrt( delta ) ) / 2.0f;
         }
     }
 
@@ -71,7 +73,8 @@ bool Sphere::Intersect( Ray ray, RaycastHit& hit ) const {
         return false;
     }
 
-    hit.primitive = ( Primitive * )this;
+    hit.primitive = ( Primitive * )
+    this;
     hit.distance = distance;
     hit.point = ray.GetPoint( hit.distance );
     hit.normal = normalize( hit.point - center );

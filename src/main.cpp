@@ -19,8 +19,9 @@ int main() {
 
     std::chrono::time_point scene_start = std::chrono::high_resolution_clock::now();
 
-    Screen::SetResolution( 800, 600 );
+    Screen::SetResolution( 3200, 2400 );
     Scene scene( "RayTracingScene" );
+    scene.renderSettings.maxRayBounces = 4;
 
     std::shared_ptr< Material > defaultSkybox{
             new Material( new Skybox_Procedural() ) };
@@ -97,20 +98,24 @@ int main() {
     GameObject sphere1 = GameObject( "Sphere 1" );
     sphere1.MoveToScene( scene );
 
-    sphere1.GetComponent< Transform >()->Translate( -3.413f, 1.326f, -9.88f );
+//    sphere1.GetComponent< Transform >()->Translate( -3.413f, 1.326f, -9.88f );
+    sphere1.GetComponent< Transform >()->Translate( -3.553f, 1.0f, -9.3f );
     Renderer* renderer1 = sphere1.AddComponent< Renderer >();
 
     std::shared_ptr< Material > M_Sphere_Transparent{
             new Material( new Phong() ) };
     renderer1->material = M_Sphere_Transparent;
 //    renderer1->GetMaterial()->color = float4( 0.65f, 0.4f, 0.0f, 1.0f );
-    renderer1->GetMaterial()->UseShader( Shader::Phong );
+    renderer1->GetMaterial()->UseShader( Shader::Cook_Torrance );
 
-    Phong* bshader1 = ( Phong* ) renderer1->GetMaterial()->shader;
-//    bshader1->mainColor = float4( 0.65f, 0.4f, 0.0f, 1.0f );
-    bshader1->shininess = 1.0f;
-    bshader1->kd = 1.0f;
-    bshader1->ks = 1.0f;
+    Cook_Torrance* bshader1 = ( Cook_Torrance* ) renderer1->GetMaterial()->shader;
+//    bshader1->mainColor = float4( 0.65f, 0.4f, 0.0f, 0.1f );
+    bshader1->mainColor = float4( 1.0f, 1.0f, 1.0f, 1.0f );
+//    bshader1->shininess = 1.0f;
+//    bshader1->kd = 1.0f;
+//    bshader1->ks = 1.0f;
+    bshader1->smoothness = 0.2f;
+    bshader1->metallic = 0.0f;
 
     renderer1->mesh = std::make_shared< Mesh >( Mesh() );
     renderer1->GetMesh()->renderer = renderer1;
@@ -152,7 +157,7 @@ int main() {
 
 //    floor.SetActive( false );
 //    sphere1.SetActive( false );
-//    sphere2.SetActive( false );
+    sphere2.SetActive( false );
     cube.SetActive( false );
 
     Renderer* renderer4 = cube.AddComponent< Renderer >();

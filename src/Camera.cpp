@@ -162,15 +162,15 @@ void Camera::RenderPixel( int x, int y,
                   focalLength );
 
     float4 finalColor( 0.0f );
-    float depth = 0;
+    //float depth = 0;
 
-    if( x == 400 && y == 150 ) {
-        x = 400;
+    if( x == 335 && y == 335 ) {
+        x = 335;
     }
 
     if( !allowMSAA ) {
         Ray ray = ViewportPointToRay( point );
-        RenderRay( ray, finalColor, depth, primitives, lights );
+        finalColor = RenderRay( ray, primitives, lights, 0 );
 
     } else {
         float3 samplingPoints[4];
@@ -191,17 +191,15 @@ void Camera::RenderPixel( int x, int y,
 
         for( const float3& samplingPoint : samplingPoints ) {
             float4 subColor;
-            float subDepth;
 
             Ray ray = ViewportPointToRay( samplingPoint );
-            RenderRay( ray, subColor, subDepth, primitives, lights );
+            subColor = RenderRay( ray, primitives, lights, 0 );
 
             finalColor += 0.25f * subColor;
-            depth += 0.25f * subDepth;
         }
     }
 
-    targetTexture.WriteDepthBuffer( x, y, depth, 110 );
+    //targetTexture.WriteDepthBuffer( x, y, depth, 110 );
     targetTexture.WriteColorBuffer( x, y, finalColor );
 }
 
@@ -216,14 +214,19 @@ void Camera::RenderBlock( int start, int end,
     }
 }
 
-void Camera::RenderRay( const Ray& ray, float4& color, float& depth,
-                        const std::vector< Primitive* >& primitives,
-                        const std::vector< Light* >& lights ) {
+float4 Camera::RenderRay( const Ray& ray,
+                          const std::vector< Primitive* >& primitives,
+                          const std::vector< Light* >& lights,
+                          int rayBouncesNumber ) {
+    if( rayBouncesNumber >= _scene->renderSettings.maxRayBounces ) {
+        return float4( 0.0f );
+    }
+
     RaycastHit hit;
     RaycastHit hitInfo;
 
     float4 finalColor = backgroundColor;
-    depth = farClipPlane;
+    float depth = farClipPlane;
     int nearestIndex = -1;
 
     for( unsigned int i = 0; i < primitives.size(); ++i ) {
@@ -272,6 +275,7 @@ void Camera::RenderRay( const Ray& ray, float4& color, float& depth,
                 pshader.lightColor = light->color * light->intensity;
 
                 finalColor += pshader.Shading();
+
             } else if( shader->Type() == Shader::BlinnPhong ) {
                 BlinnPhong bshader = BlinnPhong(
                         ( const BlinnPhong& ) *shader );
@@ -285,6 +289,73 @@ void Camera::RenderRay( const Ray& ray, float4& color, float& depth,
                 bshader.lightColor = light->color * light->intensity;
 
                 finalColor += bshader.Shading();
+
+            } else if( shader->Type() == Shader::Cook_Torrance ) {
+                float3 reflectionVector = reflect( ray.direction, hit.normal );
+                Ray reflectionRay( hit.point + reflectionVector * 0.01f,
+                                   reflectionVector );
+                float4 reflection = RenderRay( reflectionRay, primitives,
+                                               lights, rayBouncesNumber + 1 );
+
+                // the ratio of indices of refraction
+                float refractiveIndex = 1.0125f;
+
+                // the ratio of indices of refraction
+                float eta;
+
+                float3 refractionVector;
+
+                if( ( float ) dot( ray.direction, hit.normal ) < 0.0f ) {
+                    eta = _scene->renderSettings.airRefractiveIndex /
+                          refractiveIndex;
+                    refractionVector = refract( ray.direction, hit.normal,
+                                                eta );
+                } else {
+                    // ray inside the object
+                    eta = refractiveIndex /
+                          _scene->renderSettings.airRefractiveIndex;
+                    refractionVector = refract( ray.direction, -hit.normal,
+                                                eta );
+                }
+
+                float4 refraction;
+
+                if( ( float ) length( refractionVector ) != 0.0f ) {
+                    // compute refraction
+                    Ray refractionRay( hit.point + refractionVector * 0.0001f,
+                                       refractionVector );
+                    refraction = RenderRay( refractionRay, primitives, lights,
+                                            rayBouncesNumber + 1 );
+                } else {
+                    // no refraction
+                    refraction = float4( 0.0f );
+                }
+
+                if( ( float ) dot( ray.direction, hit.normal ) >= 0.0f ) {
+                    finalColor += refraction;
+                    continue;
+                }
+
+                Cook_Torrance cshader = Cook_Torrance(
+                        ( const Cook_Torrance& ) *shader );
+
+                cshader.view = -ray.direction;
+                cshader.normal = hit.normal;
+                cshader.light = shadowRay.direction;
+                cshader.uv = hit.textureCoord;
+
+                cshader.lightPositon = light->gameObject->transform->positon;
+                cshader.lightColor = light->color * light->intensity;
+
+                cshader.irradiance = reflection.xyz;
+
+//                finalColor += cshader.Shading();
+                finalColor +=
+                        ( float ) cshader.mainColor.a * cshader.Shading() +
+                        ( 1.0f - ( float ) cshader.mainColor.a ) * refraction;
+
+            } else if( shader->Type() == Shader::Unlit ) {
+                finalColor += shader->Shading();
             }
         }
     } else {
@@ -301,9 +372,20 @@ void Camera::RenderRay( const Ray& ray, float4& color, float& depth,
                     skyshader._SunColor = _scene->renderSettings.sun->color.xyz;
                 }
 
-                skyshader.viewRay = mul(
-                        inverse( transpose( _cameraToWorldMatrix ) ),
-                        float4( ray.direction, 1.0f ) ).xyz;
+                float3x3 vectorCameraToWorld = float3x3(
+                        _cameraToWorldMatrix._vec0,
+                        _cameraToWorldMatrix._vec1,
+                        _cameraToWorldMatrix._vec2 );
+                vectorCameraToWorld = inverse(
+                        transpose( vectorCameraToWorld ) );
+
+//                skyshader.viewRay = mul(
+//                        inverse( transpose( _cameraToWorldMatrix ) ),
+//                        float4( ray.direction, 1.0f ) ).xyz;
+//                skyshader.viewRay = float3(
+//                        mul( vectorCameraToWorld, ray.direction )._vec );
+                skyshader.viewRay = mul( vectorCameraToWorld,
+                                         ray.direction ).xyz;
 
                 finalColor = skyshader.Shading();
             }
@@ -318,7 +400,7 @@ void Camera::RenderRay( const Ray& ray, float4& color, float& depth,
 //
 //    depth = 1.0f - depth;
 
-    color = finalColor;
+    return finalColor;
 }
 
 Ray Camera::ViewportPointToRay( float3 position ) const {

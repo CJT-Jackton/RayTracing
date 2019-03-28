@@ -41,11 +41,17 @@ namespace RayTracer {
         RenderSettings& operator=( const RenderSettings& other );
 
     public:
+        /** maximum number of ray bounces */
+        int maxRayBounces;
+
         /** the global skybox material to use */
         std::shared_ptr< Material > skybox;
 
         /** the light used by the procedural skybox */
         Light* sun;
+
+        /** the refractive index of air */
+        float airRefractiveIndex;
 
     }; // RenderSettings
 } // RayTracer

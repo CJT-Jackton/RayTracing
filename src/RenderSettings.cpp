@@ -17,8 +17,10 @@ using RayTracer::Light;
  */
 RenderSettings::RenderSettings() :
         Object{ "Render Settings" },
+        maxRayBounces{ 4 },
         skybox{},
-        sun{} {
+        sun{},
+        airRefractiveIndex{ 1.00027717f } {
 }
 
 /**
@@ -28,8 +30,10 @@ RenderSettings::RenderSettings() :
  */
 RenderSettings::RenderSettings( const RenderSettings& other ) :
         Object{ "Render Settings" },
+        maxRayBounces{ other.maxRayBounces },
         skybox{ other.skybox },
-        sun{ other.sun } {
+        sun{ other.sun },
+        airRefractiveIndex{ other.airRefractiveIndex } {
 }
 
 /**
@@ -41,8 +45,10 @@ RenderSettings::RenderSettings( const RenderSettings& other ) :
  */
 RenderSettings& RenderSettings::operator=( const RenderSettings& other ) {
     if( this != &other ) {
+        maxRayBounces = other.maxRayBounces;
         skybox = other.skybox;
         sun = other.sun;
+        airRefractiveIndex = other.airRefractiveIndex;
     }
 
     return *this;

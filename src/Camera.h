@@ -9,7 +9,7 @@
 #ifndef CAMERA_H
 #define CAMERA_H
 
-#include "pch.h"
+#include "GameObject.h"
 
 namespace RayTracer {
     /**
@@ -44,9 +44,10 @@ namespace RayTracer {
                           std::vector< Primitive* >& primitives,
                           std::vector< Light* >& lights );
 
-        void RenderRay( const Ray& ray, float4& color, float& depth,
-                        const std::vector< Primitive* >& primitives,
-                        const std::vector< Light* >& lights );
+        float4 RenderRay( const Ray& ray,
+                          const std::vector< Primitive* >& primitives,
+                          const std::vector< Light* >& lights,
+                          int rayBouncesNumber );
 
     public:
         bool allowMSAA;
