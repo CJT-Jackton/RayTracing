@@ -21,8 +21,8 @@ C++14 or higher. Tested on MSVC v141, no tested on other comilper yet.
 ![screenshot](https://raw.githubusercontent.com/CJT-Jackton/RayTracing/master/Screenshots/Reflection_1.png "Screenshot 1")
     *Reflection*
 
-![screenshot](https://raw.githubusercontent.com/CJT-Jackton/RayTracing/master/Screenshots/Refraction_1.png "Screenshot 2")
-    *Refraction*
+![screenshot](https://raw.githubusercontent.com/CJT-Jackton/RayTracing/master/Screenshots/Refraction_2.png "Screenshot 2")
+    *Refraction & Translucent shadow*
 
 ## Shading
 
