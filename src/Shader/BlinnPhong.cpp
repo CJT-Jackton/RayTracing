@@ -10,6 +10,8 @@
 
 using RayTracer::BlinnPhong;
 using RayTracer::Shader;
+using RayTracer::Ray;
+using RayTracer::RaycastHit;
 
 /**
  * Default constructor.
@@ -22,6 +24,7 @@ BlinnPhong::BlinnPhong() :
         uv{},
         lightPositon{},
         lightColor{},
+        shadow{},
         mainColor{},
         specularColor{},
         mainTexture{},
@@ -45,6 +48,7 @@ BlinnPhong::BlinnPhong( const BlinnPhong& other ) :
         uv{ other.uv },
         lightPositon{ other.lightPositon },
         lightColor{ other.lightColor },
+        shadow{ other.shadow },
         mainColor{ other.mainColor },
         specularColor{ other.specularColor },
         mainTexture{ other.mainTexture },
@@ -70,6 +74,7 @@ BlinnPhong& BlinnPhong::operator=( const BlinnPhong& other ) {
         uv = other.uv;
         lightPositon = other.lightPositon;
         lightColor = other.lightColor;
+        shadow = other.shadow;
         mainColor = other.mainColor;
         specularColor = other.specularColor;
         mainTexture = other.mainTexture;
@@ -89,26 +94,35 @@ BlinnPhong& BlinnPhong::operator=( const BlinnPhong& other ) {
  * @return the color of the point
  */
 float4 BlinnPhong::Shading() const {
-    float4 albedo = mainColor;
+    float3 albedo = mainColor;
 
     if( mainTexture ) {
         // use texture color if has texture
         albedo = Texture::Sample( mainTexture,
-                                  uv * mainTextureScale + mainTextureOffset );
+                                  uv * mainTextureScale +
+                                  mainTextureOffset ).xyz;
     }
 
     float cos = saturate( dot( light, normal ) );
 
-    float4 diffuse = kd * albedo * cos * lightColor;
+    float3 diffuse = kd * albedo * cos * lightColor;
 
     // the half way vector
     float3 half = normalize( light + view );
     cos = saturate( dot( normal, half ) );
 
-    float4 specular =
-            ks * specularColor * std::pow( cos, shininess * 64 ) * lightColor;
+    float3 specular = ks * specularColor
+                      * std::pow( cos, shininess * 64 ) * lightColor;
 
-    return diffuse + specular;
+    float3 finalColor = shadow * ( diffuse + specular );
+
+    return float4( finalColor, 1.0f );
+}
+
+void BlinnPhong::Setup( const Ray& ray, const RaycastHit& hit ) {
+    view = -ray.direction;
+    normal = hit.normal;
+    uv = hit.textureCoord;
 }
 
 /**

@@ -17,6 +17,14 @@ namespace RayTracer {
      */
     class Camera : public GameObject {
     public:
+        /**
+         * 	How the camera clears the background.
+         */
+        enum CameraClearFlags{
+            Skybox, // Clear with the skybox
+            SolidColor // Clear with a background color
+        };
+
         Camera();
 
         Camera( const Camera& other );

@@ -22,6 +22,7 @@ Phong::Phong() :
         uv{},
         lightPositon{},
         lightColor{},
+        shadow{},
         mainColor{},
         specularColor{},
         mainTexture{},
@@ -45,6 +46,7 @@ Phong::Phong( const Phong& other ) :
         uv{ other.uv },
         lightPositon{ other.lightPositon },
         lightColor{ other.lightColor },
+        shadow{ other.shadow },
         mainColor{ other.mainColor },
         specularColor{ other.specularColor },
         mainTexture{ other.mainTexture },
@@ -70,6 +72,7 @@ Phong& Phong::operator=( const Phong& other ) {
         uv = other.uv;
         lightPositon = other.lightPositon;
         lightColor = other.lightColor;
+        shadow = other.shadow;
         mainColor = other.mainColor;
         specularColor = other.specularColor;
         mainTexture = other.mainTexture;
@@ -89,27 +92,26 @@ Phong& Phong::operator=( const Phong& other ) {
  * @return the color of the point
  */
 float4 Phong::Shading() const {
-    float4 albedo = mainColor;
+    float3 albedo = mainColor;
 
     if( mainTexture ) {
         // use texture color if has texture
-        albedo = Texture::Sample( mainTexture,
-                                  uv * mainTextureScale + mainTextureOffset );
+        albedo = Texture::Sample( mainTexture, uv * mainTextureScale +
+                                               mainTextureOffset ).xyz;
     }
 
     float cos = saturate( dot( light, normal ) );
 
-    float4 diffuse = kd * albedo * cos * lightColor;
+    float3 diffuse = kd * albedo * cos * lightColor;
 
     cos = saturate( dot( reflect( -light, normal ), view ) );
 
-    float4 specular =
+    float3 specular =
             ks * specularColor * std::pow( cos, shininess * 32 ) * lightColor;
 
-//    float3 a = float3( normal.x, normal.y, -normal.z ) * 0.5f + float3( 0.5f );
-//    float4 finalColor = float4( a, 1.0f );
+    float3 finalColor = shadow * ( diffuse + specular );
 
-    return diffuse + specular;
+    return float4( finalColor, 1.0f );
 }
 
 /**

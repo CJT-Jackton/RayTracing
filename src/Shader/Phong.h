@@ -69,13 +69,16 @@ namespace RayTracer {
         float3 lightPositon;
 
         /** the light color */
-        float4 lightColor;
+        float3 lightColor;
 
         /** the albedo color */
-        float4 mainColor;
+        float3 mainColor;
 
         /** the specular highlight color */
-        float4 specularColor;
+        float3 specularColor;
+
+        /** the shadow */
+        float3 shadow;
 
         /** the texture */
         Texture* mainTexture;

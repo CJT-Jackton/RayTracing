@@ -44,6 +44,9 @@ namespace RayTracer {
         /** maximum number of ray bounces */
         int maxRayBounces;
 
+        /** maximun number of sample ray */
+        int maxSampleRayNumber;
+
         /** the global skybox material to use */
         std::shared_ptr< Material > skybox;
 

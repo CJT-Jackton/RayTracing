@@ -19,13 +19,14 @@ int main() {
 
     std::chrono::time_point scene_start = std::chrono::high_resolution_clock::now();
 
-    Screen::SetResolution( 3200, 2400 );
+    Screen::SetResolution( 800, 600 );
     Scene scene( "RayTracingScene" );
     scene.renderSettings.maxRayBounces = 4;
 
     std::shared_ptr< Material > defaultSkybox{
             new Material( new Skybox_Procedural() ) };
     scene.renderSettings.skybox = defaultSkybox;
+//    scene.renderSettings.skybox = nullptr;
 
     Checkerboard2D* checkerboard2D = new Checkerboard2D();
     checkerboard2D->filterMode = Texture::FilterMode::Bilinear;
@@ -49,7 +50,7 @@ int main() {
     std::shared_ptr< Material > M_Floor{ new Material( new Phong() ) };
     M_Floor->color = float4( 0.7f, 0.7f, 0.7f, 1.0f );
     M_Floor->mainTexture = ( Texture* ) checkerboard2D;
-    M_Floor->mainTextureScale = float2( 8.0f, 16.0f );
+    M_Floor->mainTextureScale = float2( 4.0f, 4.0f );
 
     renderer3->material = M_Floor;
 //    renderer3->GetMaterial()->color = float4( 0.7f, 0.7f, 0.7f, 1.0f );
@@ -68,9 +69,13 @@ int main() {
     std::unique_ptr< Triangle > t1 = std::make_unique< Triangle >();
     std::unique_ptr< Triangle > t2 = std::make_unique< Triangle >();
 
-    t1->vertices[ 0 ] = float3( -5, 0, -10 );
-    t1->vertices[ 1 ] = float3( 5, 0, -10 );
-    t1->vertices[ 2 ] = float3( -5, 0, 10 );
+//    t1->vertices[ 0 ] = float3( -5, 0, -10 );
+//    t1->vertices[ 1 ] = float3( 5, 0, -10 );
+//    t1->vertices[ 2 ] = float3( -5, 0, 10 );
+
+    t1->vertices[ 0 ] = float3( -1.25f, 0, -1.25f );
+    t1->vertices[ 1 ] = float3( 1.25f, 0, -1.25f );
+    t1->vertices[ 2 ] = float3( -1.25f, 0, 1.25f );
 
     t1->normals[ 0 ] = float3( 0, 1, 0 );
     t1->normals[ 1 ] = float3( 0, 1, 0 );
@@ -80,9 +85,13 @@ int main() {
     t1->uv[ 1 ] = float2( 1, 0 );
     t1->uv[ 2 ] = float2( 0, 1 );
 
-    t2->vertices[ 0 ] = float3( -5, 0, 10 );
-    t2->vertices[ 1 ] = float3( 5, 0, -10 );
-    t2->vertices[ 2 ] = float3( 5, 0, 10 );
+//    t2->vertices[ 0 ] = float3( -5, 0, 10 );
+//    t2->vertices[ 1 ] = float3( 5, 0, -10 );
+//    t2->vertices[ 2 ] = float3( 5, 0, 10 );
+
+    t2->vertices[ 0 ] = float3( -1.25f, 0, 1.25f );
+    t2->vertices[ 1 ] = float3( 1.25f, 0, -1.25f );
+    t2->vertices[ 2 ] = float3( 1.25f, 0, 1.25f );
 
     t2->normals[ 0 ] = float3( 0, 1, 0 );
     t2->normals[ 1 ] = float3( 0, 1, 0 );
@@ -148,6 +157,29 @@ int main() {
     p2->radius = .5f;
     renderer2->GetMesh()->AddPrimitive( std::move( p2 ) );
 
+    GameObject sphere3 = GameObject( "Sphere 3" );
+    sphere3.MoveToScene( scene );
+
+    sphere3.GetComponent< Transform >()->Translate( 0.0f, 0.5f, 0.0f );
+    Renderer* renderer5 = sphere3.AddComponent< Renderer >();
+
+    std::shared_ptr< Material > M_Sphere_Test{
+            new Material( new Phong() ) };
+    renderer5->material = M_Sphere_Test;
+    renderer5->GetMaterial()->color = float4( 1.0f, 1.0f, 1.0f, 0.1f );
+    renderer5->GetMaterial()->UseShader( Shader::Cook_Torrance );
+
+    Cook_Torrance* cshader = ( Cook_Torrance* ) renderer5->GetMaterial()->shader;
+//    cshader->mainColor = float4( 0.8f, 0.4f, 0.0f, 1.0f );
+    cshader->mainColor = float4( 1.0f, 1.0f, 1.0f, 0.1f );
+    cshader->smoothness = 0.2f;
+    cshader->metallic = 0.0f;
+
+    renderer5->mesh = std::make_shared< Mesh >( Mesh() );
+    renderer5->GetMesh()->renderer = renderer5;
+    std::unique_ptr< Sphere > p3 = std::make_unique< Sphere >();
+    p3->radius = .5f;
+    renderer5->GetMesh()->AddPrimitive( std::move( p3 ) );
 
     GameObject cube = GameObject( "Cube" );
     cube.MoveToScene( scene );
@@ -156,8 +188,9 @@ int main() {
     cube.GetComponent< Transform >()->Rotate( 8.8f, -13.88f, 0.0f );
 
 //    floor.SetActive( false );
-//    sphere1.SetActive( false );
+    sphere1.SetActive( false );
     sphere2.SetActive( false );
+//    sphere3.SetActive( false );
     cube.SetActive( false );
 
     Renderer* renderer4 = cube.AddComponent< Renderer >();
@@ -181,7 +214,8 @@ int main() {
     GameObject dLight = GameObject( "Directional Light" );
     dLight.MoveToScene( scene );
 
-    dLight.GetComponent< Transform >()->Rotate( 40.0f, 15.0f, 0.0f );
+//    dLight.GetComponent< Transform >()->Rotate( 40.0f, 15.0f, 0.0f );
+    dLight.GetComponent< Transform >()->Rotate( 75.2f, -128.7f, 0.0f );
 
     Light* light = dLight.AddComponent< Light >();
     light->type = Light::Directional;
@@ -189,6 +223,7 @@ int main() {
 //    light->color = float4( 1.0f, 0.9568627f, 0.8392157f, 1.0f );
     light->color = float4( 1.0f, 1.0f, 1.0f, 1.0f );
     light->intensity = 1.0f;
+    light->shadows = Light::LightShadows::Translucent;
 
     GameObject dLight2 = GameObject( "Directional Light" );
     dLight2.MoveToScene( scene );
@@ -199,6 +234,7 @@ int main() {
     light->type = Light::Directional;
     light->color = float4( 1.0f, 1.0f, 1.0f, 1.0f );
     light->intensity = 1.0f;
+    light->shadows = Light::LightShadows::Translucent;
 
     GameObject pLight = GameObject( "Point Light" );
     pLight.MoveToScene( scene );
@@ -233,6 +269,12 @@ int main() {
     camera2.GetComponent< Transform >()->Translate( -6.95f, 3.4f, -5.88f );
     camera2.GetComponent< Transform >()->Rotate( 25.1f, 120.0f, 0.0f );
 
+    Camera camera3;
+    camera3.MoveToScene( scene );
+
+    camera3.GetComponent< Transform >()->Translate( 0.665f, 1.259f, -1.51f );
+    camera3.GetComponent< Transform >()->Rotate( 27.37f, -24.5f, 0.0f );
+
 //    camera2.allowMSAA = true;
 
     std::chrono::time_point scene_end = std::chrono::high_resolution_clock::now();
@@ -245,7 +287,7 @@ int main() {
 
     std::chrono::time_point render_start = std::chrono::high_resolution_clock::now();
 
-    Camera::main = Camera::allCameras[ 0 ];
+    Camera::main = Camera::allCameras[ 2 ];
     Camera::main->Render();
 
     std::chrono::time_point render_end = std::chrono::high_resolution_clock::now();
@@ -260,13 +302,6 @@ int main() {
     color.LoadRawTextureData(
             ptr );
     color.SaveTextureToPNG( scene.name + ".png" );
-
-    Texture2D depth = Texture2D( Screen::width, Screen::height,
-                                 Texture2D::RFloat );
-//    ptr = Camera::main->targetTexture.depthBuffer.GetNativeRenderBufferPtr();
-//    depth.LoadRawTextureData(
-//            ptr );
-//    depth.SaveTextureToPNG( scene.name + "_depth.png" );
 
     delete ( tiger );
 

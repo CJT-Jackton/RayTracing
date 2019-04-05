@@ -164,8 +164,8 @@ void Camera::RenderPixel( int x, int y,
     float4 finalColor( 0.0f );
     //float depth = 0;
 
-    if( x == 335 && y == 335 ) {
-        x = 335;
+    if( x == 377 && y == 444 ) {
+        x = 377;
     }
 
     if( !allowMSAA ) {
@@ -243,21 +243,34 @@ float4 Camera::RenderRay( const Ray& ray,
         finalColor = float4( 0.0f );
 
         for( const Light* light : lights ) {
-            bool inShadow = false;
+            // the strength of shadow (enable translucent shadow)
+            float3 shadow = float3( 1.0f );
+
             Ray shadowRay = light->GetShadowRay( hit.point );
             RaycastHit h;
 
-            for( unsigned int i = 0; i < primitives.size(); ++i ) {
-                if( i != nearestIndex ) {
+            if( light->shadows != Light::LightShadows::None ) {
+                for( unsigned int i = 0; i < primitives.size(); ++i ) {
+                    if( i == nearestIndex ) {
+                        continue;
+                    }
+
                     if( primitives[ i ]->Intersect( shadowRay, h ) ) {
-                        inShadow = true;
-                        break;
+                        if( light->shadows == Light::LightShadows::Hard ) {
+                            break;
+
+                        } else if( light->shadows ==
+                                   Light::LightShadows::Translucent ) {
+                            shadow -= ( float ) primitives[ i ]->mesh->renderer->material->color.a;
+                        }
+
+                        // no light illuminate the hit point
+                        if( shadow.x < 0.0f ) {
+                            shadow = float3( 0.0f );
+                            break;
+                        }
                     }
                 }
-            }
-
-            if( inShadow ) {
-                continue;
             }
 
             Shader* shader =
@@ -271,8 +284,10 @@ float4 Camera::RenderRay( const Ray& ray,
                 pshader.light = shadowRay.direction;
                 pshader.uv = hit.textureCoord;
 
+                pshader.shadow = shadow;
+
                 pshader.lightPositon = light->gameObject->transform->positon;
-                pshader.lightColor = light->color * light->intensity;
+                pshader.lightColor = ( light->color * light->intensity ).xyz;
 
                 finalColor += pshader.Shading();
 
@@ -285,8 +300,10 @@ float4 Camera::RenderRay( const Ray& ray,
                 bshader.light = shadowRay.direction;
                 bshader.uv = hit.textureCoord;
 
+                bshader.shadow = shadow;
+
                 bshader.lightPositon = light->gameObject->transform->positon;
-                bshader.lightColor = light->color * light->intensity;
+                bshader.lightColor = ( light->color * light->intensity ).xyz;
 
                 finalColor += bshader.Shading();
 
@@ -298,7 +315,7 @@ float4 Camera::RenderRay( const Ray& ray,
                                                lights, rayBouncesNumber + 1 );
 
                 // the ratio of indices of refraction
-                float refractiveIndex = 1.0125f;
+                float refractiveIndex = 1.125f;
 
                 // the ratio of indices of refraction
                 float eta;

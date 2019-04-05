@@ -20,7 +20,9 @@ Light::Light( GameObject* gameObject ) :
         Component{ gameObject },
         type{ LightType::Directional },
         color{ 1.0f, 1.0f, 1.0f, 1.0f },
-        intensity{ 1.0f } {
+        intensity{ 1.0f },
+        shadows{ LightShadows::Hard },
+        shadowBias{ 0.00001f } {
 }
 
 /**
@@ -32,8 +34,10 @@ Light::Light( GameObject* gameObject ) :
 Light::Light( GameObject* gameObject, std::string name ) :
         Component{ gameObject, std::move( name ) },
         type{ LightType::Directional },
-        color{ 1.0f, 0.9568627f, 0.8392157f, 1.0f },
-        intensity{ 1.0f } {
+        color{ 1.0f, 1.0f, 1.0f, 1.0f },
+        intensity{ 1.0f },
+        shadows{ LightShadows::Hard },
+        shadowBias{ 0.00001f } {
 }
 
 /**
@@ -48,6 +52,8 @@ Light& Light::operator=( const Light& other ) {
         type = other.type;
         color = other.color;
         intensity = other.intensity;
+        shadows = other.shadows;
+        shadowBias = other.shadowBias;
     }
 
     return *this;
@@ -63,11 +69,22 @@ Light& Light::operator=( const Light& other ) {
  */
 RayTracer::Ray Light::GetShadowRay( float3 point ) const {
     if( type == LightType::Directional ) {
-        return Ray( point, -gameObject->transform->forward );
+        float3 dir = -gameObject->transform->forward;
+        float3 pos = point + shadowBias * dir;
+
+        return Ray( pos, dir );
+
     } else if( type == LightType::Point ) {
-        return Ray( point, gameObject->transform->positon - point );
+        float3 dir = gameObject->transform->positon - point;
+        float3 pos = point + shadowBias * dir;
+
+        return Ray( pos, dir );
+
     } else if( type == LightType::Spot ) {
-        return Ray( point, gameObject->transform->positon - point );
+        float3 dir = gameObject->transform->positon - point;
+        float3 pos = point + shadowBias * dir;
+
+        return Ray( pos, dir );
     }
 
     return Ray( float3(), float3() );

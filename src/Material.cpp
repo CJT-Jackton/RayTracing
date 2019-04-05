@@ -29,8 +29,8 @@ Material::Material( Shader* shader ) :
     if( shader->Type() == Shader::Phong ) {
         Phong* pshader = ( Phong* ) shader;
 
-        pshader->mainColor = color;
-        pshader->specularColor = color;
+        pshader->mainColor = color.xyz;
+        pshader->specularColor = color.xyz;
         pshader->mainTexture = mainTexture;
         pshader->mainTextureOffset = mainTextureOffset;
         pshader->mainTextureScale = mainTextureScale;
@@ -38,8 +38,8 @@ Material::Material( Shader* shader ) :
     } else if( shader->Type() == Shader::BlinnPhong ) {
         BlinnPhong* bshader = ( BlinnPhong* ) shader;
 
-        bshader->mainColor = color;
-        bshader->specularColor = color;
+        bshader->mainColor = color.xyz;
+        bshader->specularColor = color.xyz;
         bshader->mainTexture = mainTexture;
         bshader->mainTextureOffset = mainTextureOffset;
         bshader->mainTextureScale = mainTextureScale;
@@ -79,8 +79,8 @@ void Material::UseShader( Shader::ShaderType type ) {
         shader = new Phong();
         Phong* pshader = ( Phong* ) shader;
 
-        pshader->mainColor = color;
-        pshader->specularColor = color;
+        pshader->mainColor = color.xyz;
+        pshader->specularColor = color.xyz;
         pshader->mainTexture = mainTexture;
         pshader->mainTextureOffset = mainTextureOffset;
         pshader->mainTextureScale = mainTextureScale;
@@ -89,8 +89,8 @@ void Material::UseShader( Shader::ShaderType type ) {
         shader = new BlinnPhong();
         BlinnPhong* bshader = ( BlinnPhong* ) shader;
 
-        bshader->mainColor = color;
-        bshader->specularColor = color;
+        bshader->mainColor = color.xyz;
+        bshader->specularColor = color.xyz;
         bshader->mainTexture = mainTexture;
         bshader->mainTextureOffset = mainTextureOffset;
         bshader->mainTextureScale = mainTextureScale;

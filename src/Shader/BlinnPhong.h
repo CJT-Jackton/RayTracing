@@ -45,6 +45,8 @@ namespace RayTracer {
          */
         float4 Shading() const override;
 
+        void Setup( const Ray& ray, const RaycastHit& hit );
+
         /**
          * The type of the shader program.
          *
@@ -69,13 +71,16 @@ namespace RayTracer {
         float3 lightPositon;
 
         /** the light color */
-        float4 lightColor;
+        float3 lightColor;
+
+        /** the shadow */
+        float3 shadow;
 
         /** the albedo color */
-        float4 mainColor;
+        float3 mainColor;
 
         /** the specular highlight color */
-        float4 specularColor;
+        float3 specularColor;
 
         /** the texture */
         Texture* mainTexture;

@@ -27,6 +27,15 @@ namespace RayTracer {
         };
 
         /**
+         * Shadow casting options for a Light.
+         */
+        enum LightShadows{
+            None,
+            Hard,
+            Translucent
+        };
+
+        /**
          * Create a Light attached to a GameObject.
          *
          * @param gameObject the GameObject to attach
@@ -69,6 +78,12 @@ namespace RayTracer {
 
         /** the intensity of a light is multiplied with the Light color */
         float intensity;
+
+        /** how this light casts shadow */
+        LightShadows shadows;
+
+        /** shadow ray constant bias */
+        float shadowBias;
 
     }; // Light
 } // RayTracer
