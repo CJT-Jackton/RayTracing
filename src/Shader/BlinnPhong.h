@@ -45,6 +45,11 @@ namespace RayTracer {
          */
         float4 Shading() const override;
 
+        float4 DirectShading( float3 lightPosition[],
+                              float4 lightColor[] ) const override;
+
+        float4 IndirectShading() const override;
+
         void Setup( const Ray& ray, const RaycastHit& hit );
 
         /**
@@ -81,6 +86,9 @@ namespace RayTracer {
 
         /** the specular highlight color */
         float3 specularColor;
+
+        /** the ambient color */
+        float3 ambientColor;
 
         /** the texture */
         Texture* mainTexture;

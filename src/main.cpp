@@ -171,7 +171,7 @@ int main() {
 
     Cook_Torrance* cshader = ( Cook_Torrance* ) renderer5->GetMaterial()->shader;
 //    cshader->mainColor = float4( 0.8f, 0.4f, 0.0f, 1.0f );
-    cshader->mainColor = float4( 1.0f, 1.0f, 1.0f, 0.1f );
+//    cshader->mainColor = float4( 1.0f, 1.0f, 1.0f, 1.0f );
     cshader->smoothness = 0.2f;
     cshader->metallic = 0.0f;
 

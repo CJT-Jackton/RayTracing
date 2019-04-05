@@ -104,6 +104,15 @@ float4 Skybox_Procedural::Shading() const {
     return frag( vert() );
 }
 
+float4 Skybox_Procedural::DirectShading( float3* lightPosition,
+                                         float4* lightColor ) const {
+    return float4( 0.0f );
+}
+
+float4 Skybox_Procedural::IndirectShading() const {
+    return frag( vert() );
+}
+
 Skybox_Procedural::v2f Skybox_Procedural::vert() const {
     Skybox_Procedural::v2f OUT;
 

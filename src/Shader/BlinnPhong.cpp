@@ -27,6 +27,7 @@ BlinnPhong::BlinnPhong() :
         shadow{},
         mainColor{},
         specularColor{},
+        ambientColor{},
         mainTexture{},
         mainTextureScale{ float2( 1.0f ) },
         mainTextureOffset{ float2( 0.0f ) },
@@ -51,6 +52,7 @@ BlinnPhong::BlinnPhong( const BlinnPhong& other ) :
         shadow{ other.shadow },
         mainColor{ other.mainColor },
         specularColor{ other.specularColor },
+        ambientColor{ other.ambientColor },
         mainTexture{ other.mainTexture },
         mainTextureScale{ other.mainTextureScale },
         mainTextureOffset{ other.mainTextureOffset },
@@ -77,6 +79,7 @@ BlinnPhong& BlinnPhong::operator=( const BlinnPhong& other ) {
         shadow = other.shadow;
         mainColor = other.mainColor;
         specularColor = other.specularColor;
+        ambientColor = other.ambientColor;
         mainTexture = other.mainTexture;
         mainTextureScale = other.mainTextureScale;
         mainTextureOffset = other.mainTextureOffset;
@@ -117,6 +120,15 @@ float4 BlinnPhong::Shading() const {
     float3 finalColor = shadow * ( diffuse + specular );
 
     return float4( finalColor, 1.0f );
+}
+
+float4 BlinnPhong::DirectShading( float3* lightPosition,
+                                  float4* lightColor ) const {
+    return Shading();
+}
+
+float4 BlinnPhong::IndirectShading() const {
+    return float4( ambientColor, 1.0f );
 }
 
 void BlinnPhong::Setup( const Ray& ray, const RaycastHit& hit ) {

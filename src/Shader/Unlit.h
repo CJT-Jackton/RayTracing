@@ -45,6 +45,11 @@ namespace RayTracer {
          */
         float4 Shading() const;
 
+        float4 DirectShading( float3 lightPosition[],
+                              float4 lightColor[] ) const override;
+
+        float4 IndirectShading() const override;
+
         /**
          * The type of the shader program.
          *

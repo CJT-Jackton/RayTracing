@@ -164,8 +164,8 @@ void Camera::RenderPixel( int x, int y,
     float4 finalColor( 0.0f );
     //float depth = 0;
 
-    if( x == 377 && y == 444 ) {
-        x = 377;
+    if( x == 400 && y == 250 ) {
+        x = 400;
     }
 
     if( !allowMSAA ) {
@@ -225,10 +225,15 @@ float4 Camera::RenderRay( const Ray& ray,
     RaycastHit hit;
     RaycastHit hitInfo;
 
+    // the final color of the ray
     float4 finalColor = backgroundColor;
+
     float depth = farClipPlane;
+
+    // the index of nearest object got hit
     int nearestIndex = -1;
 
+    // calculate the intersect between ray and primitives
     for( unsigned int i = 0; i < primitives.size(); ++i ) {
         if( primitives[ i ]->Intersect( ray, hitInfo ) ) {
             if( hitInfo.distance < depth ) {
@@ -240,10 +245,16 @@ float4 Camera::RenderRay( const Ray& ray,
     }
 
     if( nearestIndex >= 0 ) {
+        // ray hit an primitive in the scene
         finalColor = float4( 0.0f );
 
+        // the shader of the hit primitive
+        Shader* shader =
+                primitives[ nearestIndex ]->mesh->renderer->material->shader;
+
+        // calculate direct light iluminate
         for( const Light* light : lights ) {
-            // the strength of shadow (enable translucent shadow)
+            // the strength of shadow
             float3 shadow = float3( 1.0f );
 
             Ray shadowRay = light->GetShadowRay( hit.point );
@@ -272,9 +283,6 @@ float4 Camera::RenderRay( const Ray& ray,
                     }
                 }
             }
-
-            Shader* shader =
-                    primitives[ nearestIndex ]->mesh->renderer->material->shader;
 
             if( shader->Type() == Shader::Phong ) {
                 Phong pshader = Phong( ( const Phong& ) *shader );
@@ -349,7 +357,7 @@ float4 Camera::RenderRay( const Ray& ray,
                 }
 
                 if( ( float ) dot( ray.direction, hit.normal ) >= 0.0f ) {
-                    finalColor += refraction;
+//                    finalColor += refraction;
                     continue;
                 }
 
@@ -361,21 +369,91 @@ float4 Camera::RenderRay( const Ray& ray,
                 cshader.light = shadowRay.direction;
                 cshader.uv = hit.textureCoord;
 
+                cshader.shadow = shadow;
+
                 cshader.lightPositon = light->gameObject->transform->positon;
-                cshader.lightColor = light->color * light->intensity;
+                cshader.lightColor = ( light->color * light->intensity ).rgb;
 
                 cshader.irradiance = reflection.xyz;
 
-//                finalColor += cshader.Shading();
-                finalColor +=
-                        ( float ) cshader.mainColor.a * cshader.Shading() +
-                        ( 1.0f - ( float ) cshader.mainColor.a ) * refraction;
+                finalColor += cshader.Shading();
+//                finalColor +=
+//                        ( float ) cshader.mainColor.a * cshader.Shading() +
+//                        ( 1.0f - ( float ) cshader.mainColor.a ) * refraction;
 
             } else if( shader->Type() == Shader::Unlit ) {
                 finalColor += shader->Shading();
             }
         }
+
+        // calculate indirect light iluminate
+        if( shader->Type() == Shader::Phong ) {
+            Phong pshader = Phong( ( const Phong& ) *shader );
+
+            finalColor += pshader.IndirectShading();
+
+        } else if( shader->Type() == Shader::BlinnPhong ) {
+            BlinnPhong bshader = BlinnPhong( ( const BlinnPhong& ) *shader );
+
+            finalColor += bshader.IndirectShading();
+
+        } else if( shader->Type() == Shader::Cook_Torrance ) {
+            // reflection
+            float3 reflectionVector = reflect( ray.direction, hit.normal );
+            Ray reflectionRay( hit.point + reflectionVector * 0.01f,
+                               reflectionVector );
+            float4 reflection = RenderRay( reflectionRay, primitives,
+                                           lights, rayBouncesNumber + 1 );
+
+            // the ratio of indices of refraction
+            float refractiveIndex = 1.125f;
+
+            // the ratio of indices of refraction
+            float eta;
+
+            float3 refractionVector;
+
+            if( ( float ) dot( ray.direction, hit.normal ) < 0.0f ) {
+                eta = _scene->renderSettings.airRefractiveIndex /
+                      refractiveIndex;
+                refractionVector = refract( ray.direction, hit.normal,
+                                            eta );
+            } else {
+                // ray inside the object
+                eta = refractiveIndex /
+                      _scene->renderSettings.airRefractiveIndex;
+                refractionVector = refract( ray.direction, -hit.normal,
+                                            eta );
+            }
+
+            float4 refraction;
+
+            if( ( float ) length( refractionVector ) != 0.0f ) {
+                // compute refraction
+                Ray refractionRay( hit.point + refractionVector * 0.0001f,
+                                   refractionVector );
+                refraction = RenderRay( refractionRay, primitives, lights,
+                                        rayBouncesNumber + 1 );
+            } else {
+                // no refraction
+                refraction = float4( 0.0f );
+            }
+
+            Cook_Torrance cshader = Cook_Torrance(
+                    ( const Cook_Torrance& ) *shader );
+
+            cshader.view = -ray.direction;
+            cshader.normal = hit.normal;
+            cshader.uv = hit.textureCoord;
+
+            cshader.irradiance = reflection.rgb;
+            cshader.transmit = refraction.rgb;
+
+            finalColor += cshader.IndirectShading();
+        }
+
     } else {
+        // ray hit nothing, return the color of skybox
         if( _scene->renderSettings.skybox ) {
             std::shared_ptr< Material > M_Skybox = _scene->renderSettings.skybox;
 

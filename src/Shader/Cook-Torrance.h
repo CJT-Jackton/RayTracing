@@ -20,6 +20,11 @@ namespace RayTracer {
 
         float4 Shading() const;
 
+        float4 DirectShading( float3 lightPosition[],
+                              float4 lightColor[] ) const override;
+
+        float4 IndirectShading() const override;
+
         ShaderType Type() const;
 
     private:
@@ -50,7 +55,16 @@ namespace RayTracer {
         float3 lightPositon;
 
         /** the light color */
-        float4 lightColor;
+        float3 lightColor;
+
+        /** the shadow */
+        float3 shadow;
+
+        /** the  */
+        float3 irradiance;
+
+        /** the transmission of light */
+        float3 transmit;
 
         /** the albedo color */
         float4 mainColor;
@@ -64,13 +78,11 @@ namespace RayTracer {
         /** the texture scale */
         float2 mainTextureScale;
 
+        /**  */
         float metallic;
 
+        /**  */
         float smoothness;
-
-        float3 irradiance;
-
-        float3 reflection;
 
     }; // Cook_Torrance
 } // RayTracer

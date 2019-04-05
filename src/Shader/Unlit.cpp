@@ -53,6 +53,15 @@ float4 Unlit::Shading() const {
     return mainColor;
 }
 
+float4 Unlit::DirectShading( float3* lightPosition,
+                             float4* lightColor ) const {
+    return float4( 0.0f );
+}
+
+float4 Unlit::IndirectShading() const {
+    return mainColor;
+}
+
 /**
  * The type of the shader program.
  *

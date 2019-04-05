@@ -35,10 +35,10 @@ namespace RayTracer {
          */
         virtual float4 Shading() const = 0;
 
-//        virtual float4 DirectShading( float3 lightPosition[],
-//                                      float4 lightColor[] ) const = 0;
-//
-//        virtual float4 IndirectShading() const = 0;
+        virtual float4 DirectShading( float3 lightPosition[],
+                                      float4 lightColor[] ) const = 0;
+
+        virtual float4 IndirectShading() const = 0;
 
         /**
          * The type of the shader program.
