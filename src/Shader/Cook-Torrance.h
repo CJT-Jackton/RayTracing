@@ -60,8 +60,11 @@ namespace RayTracer {
         /** the shadow */
         float3 shadow;
 
-        /** the  */
+        /** the environment lighting */
         float3 irradiance;
+
+        /** the reflection of light */
+        float3 reflect;
 
         /** the transmission of light */
         float3 transmit;

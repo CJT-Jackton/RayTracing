@@ -87,6 +87,8 @@ namespace RayTracer {
     protected:
         float3 ACESFilm( float3 x );
 
+        float3 GammaCorrection( float3 color, float gamma );
+
     public:
         /** color buffer */
         RenderBuffer colorBuffer;

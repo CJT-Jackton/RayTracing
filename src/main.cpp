@@ -22,6 +22,7 @@ int main() {
     Screen::SetResolution( 800, 600 );
     Scene scene( "RayTracingScene" );
     scene.renderSettings.maxRayBounces = 4;
+    scene.renderSettings.maxSampleRayNumber = 10;
 
     std::shared_ptr< Material > defaultSkybox{
             new Material( new Skybox_Procedural() ) };
@@ -166,12 +167,12 @@ int main() {
     std::shared_ptr< Material > M_Sphere_Test{
             new Material( new Phong() ) };
     renderer5->material = M_Sphere_Test;
-    renderer5->GetMaterial()->color = float4( 1.0f, 1.0f, 1.0f, 0.1f );
+    renderer5->GetMaterial()->color = float4( 1.0f, 1.0f, 1.0f, 1.0f );
     renderer5->GetMaterial()->UseShader( Shader::Cook_Torrance );
 
     Cook_Torrance* cshader = ( Cook_Torrance* ) renderer5->GetMaterial()->shader;
 //    cshader->mainColor = float4( 0.8f, 0.4f, 0.0f, 1.0f );
-//    cshader->mainColor = float4( 1.0f, 1.0f, 1.0f, 1.0f );
+    cshader->mainColor = float4( 1.0f, 1.0f, 1.0f, 1.0f );
     cshader->smoothness = 0.2f;
     cshader->metallic = 0.0f;
 
@@ -272,8 +273,8 @@ int main() {
     Camera camera3;
     camera3.MoveToScene( scene );
 
-    camera3.GetComponent< Transform >()->Translate( 0.665f, 1.259f, -1.51f );
-    camera3.GetComponent< Transform >()->Rotate( 27.37f, -24.5f, 0.0f );
+    camera3.GetComponent< Transform >()->Translate( 0.4f, 0.87f, -1.9f );
+    camera3.GetComponent< Transform >()->Rotate( 14.0f, -15.0f, 0.0f );
 
 //    camera2.allowMSAA = true;
 

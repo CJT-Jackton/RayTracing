@@ -11,6 +11,7 @@
 using RayTracer::Triangle;
 using RayTracer::Ray;
 using RayTracer::RaycastHit;
+using RayTracer::Bounds;
 
 /**
  * Create a Triangle.
@@ -83,6 +84,24 @@ bool Triangle::Intersect( Ray ray, RaycastHit& hit ) const {
     hit.textureCoord = w.x * uv[ 0 ] + w.y * uv[ 1 ] + w.z * uv[ 2 ];
 
     return true;
+}
+
+Bounds Triangle::GetBound() const {
+    float max[] = { vertices[ 0 ].x, vertices[ 0 ].y, vertices[ 0 ].y };
+    float min[] = { vertices[ 0 ].x, vertices[ 0 ].y, vertices[ 0 ].y };
+
+    for( int i = 1; i < 3; ++i ) {
+        max[ 0 ] = vertices[ i ].x > max[ 0 ] ? vertices[ i ].x : max[ 0 ];
+        max[ 1 ] = vertices[ i ].y > max[ 1 ] ? vertices[ i ].y : max[ 1 ];
+        max[ 2 ] = vertices[ i ].z > max[ 2 ] ? vertices[ i ].z : max[ 2 ];
+
+        min[ 0 ] = vertices[ i ].x < min[ 0 ] ? vertices[ i ].x : min[ 0 ];
+        min[ 1 ] = vertices[ i ].y < min[ 1 ] ? vertices[ i ].y : min[ 1 ];
+        min[ 2 ] = vertices[ i ].z < min[ 2 ] ? vertices[ i ].z : min[ 2 ];
+    }
+
+    return Bounds( float3( max[ 0 ], max[ 1 ], max[ 2 ] ),
+                   float3( min[ 0 ], min[ 1 ], min[ 2 ] ) );
 }
 
 /**

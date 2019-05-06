@@ -111,6 +111,11 @@ void RenderTexture::WriteColorBuffer( int x, int y, float4 color ) {
 //        std::lock_guard< std::mutex > lock_guard{ write_mutex };
 //#endif
 
+//        float4 c = float4( GammaCorrection( ACESFilm( color.rgb ), 2.2f ),
+//                           1.0f );
+//        float4 c = float4( ACESFilm( GammaCorrection( color.rgb, 2.2f ) ),
+//                           1.0f );
+//        float4 c = float4( GammaCorrection( color.rgb, 2.2f ), 1.0f );
         float4 c = float4( ACESFilm( color.rgb ), 1.0f );
         c *= 256.0f;
 
@@ -170,4 +175,14 @@ float3 RenderTexture::ACESFilm( float3 x ) {
     float d = 0.59f;
     float e = 0.14f;
     return saturate( ( x * ( a * x + b ) ) / ( x * ( c * x + d ) + e ) );
+}
+
+float3 RenderTexture::GammaCorrection( float3 color, float gamma ) {
+    float power = 1.0f / gamma;
+
+    float r = pow( ( float ) color.r, power );
+    float g = pow( ( float ) color.g, power );
+    float b = pow( ( float ) color.b, power );
+
+    return float3( r, g, b );
 }

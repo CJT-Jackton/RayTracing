@@ -11,6 +11,7 @@
 using RayTracer::Sphere;
 using RayTracer::Ray;
 using RayTracer::RaycastHit;
+using RayTracer::Bounds;
 
 /**
  * Create a Sphere.
@@ -81,6 +82,17 @@ bool Sphere::Intersect( Ray ray, RaycastHit& hit ) const {
     hit.textureCoord = float2( 0.0f );
 
     return true;
+}
+
+Bounds Sphere::GetBound() const {
+    float3 max = float3( center.x + radius,
+                         center.y + radius,
+                         center.z + radius );
+    float3 min = float3( center.x - radius,
+                         center.y - radius,
+                         center.z - radius );
+
+    return Bounds( max, min );
 }
 
 /**

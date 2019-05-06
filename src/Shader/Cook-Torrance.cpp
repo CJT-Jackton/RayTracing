@@ -19,6 +19,7 @@ Cook_Torrance::Cook_Torrance() :
         lightColor{},
         shadow{},
         irradiance{},
+        reflect{},
         transmit{},
         mainColor{},
         mainTexture{},
@@ -38,6 +39,7 @@ Cook_Torrance::Cook_Torrance( const Cook_Torrance& other ) :
         lightColor{ other.lightColor },
         shadow{ other.shadow },
         irradiance{ other.irradiance },
+        reflect{ other.reflect },
         transmit{ other.transmit },
         mainColor{ other.mainColor },
         mainTexture{ other.mainTexture },
@@ -58,6 +60,7 @@ Cook_Torrance& Cook_Torrance::operator=( const Cook_Torrance& other ) {
         lightColor = other.lightColor;
         shadow = other.shadow;
         irradiance = other.irradiance;
+        reflect = other.reflect;
         transmit = other.transmit;
         mainColor = other.mainColor;
         mainTexture = other.mainTexture;
@@ -121,7 +124,9 @@ float4 Cook_Torrance::Shading() const {
 //    float3 ambient = kD * diffuse + specular;
 //
 //    color = color + ambient;
-    float3 kS = fresnel;
+
+//    float3 kS = fresnel;
+    float3 kS = specular;
     float transparency = mainColor.a;
     float3 kReflect = kS * transparency + float3( transparency );
 
@@ -158,7 +163,7 @@ float4 Cook_Torrance::IndirectShading() const {
     float3 kD = 1.0f - kS;
     kD *= 1.0f - metallic;
     float3 diffuse = irradiance * albedo;
-    float3 specular = irradiance * kS;
+    float3 specular = reflect * kS;
     float3 ambient = kD * diffuse + specular;
 
     float3 kReflect = kS * ( 1.0f - transparency ) + float3( transparency );

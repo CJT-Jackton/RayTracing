@@ -23,6 +23,7 @@
 #include <iostream>
 #include <iomanip>
 #include <iterator>
+#include <random>
 #include <sstream>
 #include <string>
 #include <memory>
@@ -62,7 +63,11 @@ namespace RayTracer {
         BYTE byte[4];
     };
 
+    class BLAS;
+
     class BlinnPhong;
+
+    class Bounds;
 
     class Camera;
 
@@ -116,6 +121,8 @@ namespace RayTracer {
 
     class Texture2D;
 
+    class TLAS;
+
     class Transform;
 
     class Triangle;
@@ -125,6 +132,9 @@ namespace RayTracer {
 } // RayTracer
 
 #include "Object.h"
+#include "Bounds.h"
+#include "BLAS.h"
+#include "TLAS.h"
 #include "Component.h"
 #include "Scene.h"
 #include "Screen.h"

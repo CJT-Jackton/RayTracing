@@ -18,7 +18,7 @@ using RayTracer::Light;
 RenderSettings::RenderSettings() :
         Object{ "Render Settings" },
         maxRayBounces{ 4 },
-        maxSampleRayNumber{ 1 },
+        maxSampleRayNumber{ 10 },
         skybox{},
         sun{},
         airRefractiveIndex{ 1.00027717f } {

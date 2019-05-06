@@ -41,6 +41,8 @@ namespace RayTracer {
          */
         bool Intersect( Ray ray, RaycastHit& hit ) const;
 
+        Bounds GetBound() const override;
+
         /**
          * Convert the triangle into world space.
          *

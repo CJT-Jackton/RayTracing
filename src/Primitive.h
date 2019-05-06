@@ -51,6 +51,8 @@ namespace RayTracer {
          */
         virtual bool Intersect( Ray ray, RaycastHit& hit ) const = 0;
 
+        virtual Bounds GetBound() const = 0;
+
         /**
          * Convert the primitive into world space.
          *

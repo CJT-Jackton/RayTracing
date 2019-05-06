@@ -164,8 +164,8 @@ void Camera::RenderPixel( int x, int y,
     float4 finalColor( 0.0f );
     //float depth = 0;
 
-    if( x == 400 && y == 250 ) {
-        x = 400;
+    if( x == 350 && y == 432 ) {
+        x = 350;
     }
 
     if( !allowMSAA ) {
@@ -252,12 +252,21 @@ float4 Camera::RenderRay( const Ray& ray,
         Shader* shader =
                 primitives[ nearestIndex ]->mesh->renderer->material->shader;
 
+        float transparency =
+                primitives[ nearestIndex ]->mesh->renderer->material->color.a;
+
         // calculate direct light iluminate
         for( const Light* light : lights ) {
             // the strength of shadow
             float3 shadow = float3( 1.0f );
 
             Ray shadowRay = light->GetShadowRay( hit.point );
+
+            // don't calculate the shadow if the point doesn't face the light
+            if( dot( hit.normal, shadowRay.direction ) < 0.0f ) {
+                shadow = float3( 1.0f );
+            }
+
             RaycastHit h;
 
             if( light->shadows != Light::LightShadows::None ) {
@@ -405,35 +414,80 @@ float4 Camera::RenderRay( const Ray& ray,
             float4 reflection = RenderRay( reflectionRay, primitives,
                                            lights, rayBouncesNumber + 1 );
 
-            // the ratio of indices of refraction
-            float refractiveIndex = 1.125f;
+            float4 irradiance = float4( 0.0f );
 
-            // the ratio of indices of refraction
-            float eta;
+            // tangent vector
+            float3 tangent = normalize(
+                    float3( 0.0f, 1.0f, -( hit.normal.y / hit.normal.z ) ) );
 
-            float3 refractionVector;
+            // bitangent vector
+            float3 bitangent = cross( hit.normal, tangent );
 
-            if( ( float ) dot( ray.direction, hit.normal ) < 0.0f ) {
-                eta = _scene->renderSettings.airRefractiveIndex /
-                      refractiveIndex;
-                refractionVector = refract( ray.direction, hit.normal,
-                                            eta );
-            } else {
-                // ray inside the object
-                eta = refractiveIndex /
-                      _scene->renderSettings.airRefractiveIndex;
-                refractionVector = refract( ray.direction, -hit.normal,
-                                            eta );
-            }
+            // convert vector from tangent space to camera space
+            float3x3 TBN = float3x3( tangent._vec,
+                                     bitangent._vec,
+                                     hit.normal._vec );
 
+            std::random_device rd;
+            std::mt19937 generator( rd() );
+            std::uniform_real_distribution< float > distribution( -1.0f, 1.0f );
+            std::uniform_real_distribution< float > distributionh( 0.0f, 1.0f );
+
+            int nSampleRay = _scene->renderSettings.maxSampleRayNumber;
+            float wSample = 1.0f / nSampleRay;
+
+//            for( int _ = 0; _ < nSampleRay; ++_ ) {
+//                float x = distribution( generator );
+//                float y = distributionh( generator );
+//                float z = distribution( generator );
+//
+//                float3 sampleDir = mul( TBN, normalize( float3( x, y, z ) ) );
+//                Ray sampleRay = Ray( hit.point + sampleDir * 0.0001f,
+//                                     sampleDir );
+//                irradiance +=
+//                        wSample * RenderRay( sampleRay, primitives, lights,
+//                                             rayBouncesNumber + 1 );
+//            }
+            irradiance = reflection;
+
+            // refraction
             float4 refraction;
 
-            if( ( float ) length( refractionVector ) != 0.0f ) {
-                // compute refraction
-                Ray refractionRay( hit.point + refractionVector * 0.0001f,
-                                   refractionVector );
-                refraction = RenderRay( refractionRay, primitives, lights,
-                                        rayBouncesNumber + 1 );
+            // compute refraction only when needed
+            if( transparency < 1.0f ) {
+                // the ratio of indices of refraction
+                float refractiveIndex = 1.125f;
+
+                // the ratio of indices of refraction
+                float eta;
+
+                // the direction of refraction ray
+                float3 refractionVector;
+
+                if( ( float ) dot( ray.direction, hit.normal ) < 0.0f ) {
+                    // ray shooting from outside
+                    eta = _scene->renderSettings.airRefractiveIndex /
+                          refractiveIndex;
+                    refractionVector = refract( ray.direction, hit.normal,
+                                                eta );
+                } else {
+                    // ray inside the object
+                    eta = refractiveIndex /
+                          _scene->renderSettings.airRefractiveIndex;
+                    refractionVector = refract( ray.direction, -hit.normal,
+                                                eta );
+                }
+
+                if( ( float ) length( refractionVector ) != 0.0f ) {
+                    // compute refraction
+                    Ray refractionRay( hit.point + refractionVector * 0.0001f,
+                                       refractionVector );
+                    refraction = RenderRay( refractionRay, primitives, lights,
+                                            rayBouncesNumber + 1 );
+                } else {
+                    // no refraction
+                    refraction = float4( 0.0f );
+                }
             } else {
                 // no refraction
                 refraction = float4( 0.0f );
@@ -446,7 +500,8 @@ float4 Camera::RenderRay( const Ray& ray,
             cshader.normal = hit.normal;
             cshader.uv = hit.textureCoord;
 
-            cshader.irradiance = reflection.rgb;
+            cshader.irradiance = irradiance.rgb;
+            cshader.reflect = reflection.rgb;
             cshader.transmit = refraction.rgb;
 
             finalColor += cshader.IndirectShading();

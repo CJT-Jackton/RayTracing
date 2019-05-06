@@ -41,6 +41,8 @@ namespace RayTracer {
          */
         bool Intersect( Ray ray, RaycastHit& hit ) const override;
 
+        Bounds GetBound() const override;
+
         /**
          * Convert the sphere into world space.
          *
