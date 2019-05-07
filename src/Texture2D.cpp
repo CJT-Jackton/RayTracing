@@ -94,7 +94,7 @@ void Texture2D::SetPixel( int x, int y, float4 color ) {
  * @param data the raw data
  */
 void Texture2D::LoadRawTextureData( BYTE* data ) {
-    rawData = std::vector< BYTE >{ data, data + ( width * height * 4 ) };
+    rawData = std::vector< BYTE >{ data, data + ( width * height * 16 ) };
 }
 
 /**
@@ -126,7 +126,7 @@ void Texture2D::ReadTextureFromPNG( const std::string& filename ) {
  * @param filename the file name
  */
 void Texture2D::SaveTextureToPNG( const std::string& filename ) const {
-    png::image< png::basic_rgba_pixel< BYTE > > image(
+    png::image <png::basic_rgba_pixel< BYTE >> image(
             ( unsigned int ) width,
             ( unsigned int ) height );
 
@@ -153,10 +153,55 @@ void Texture2D::SaveTextureToPNG( const std::string& filename ) const {
 
                 float depth = d.f;
                 depth *= 256;
-                BYTE color = ( BYTE ) ( depth == 256 ? 255 : depth );
+                BYTE color = ( BYTE )( depth == 256 ? 255 : depth );
 
                 image[ y ][ x ] = png::basic_rgba_pixel(
                         color, color, color, ( BYTE ) 255 );
+            }
+        }
+    } else if( format == TextureFormat::RGBAFloat ) {
+        for( int y = 0; y < height; ++y ) {
+            for( int x = 0; x < width; ++x ) {
+                floatBYTE d{};
+
+                d.byte[ 0 ] = rawData[ ( y * width + x ) * 16 + 0 ];
+                d.byte[ 1 ] = rawData[ ( y * width + x ) * 16 + 1 ];
+                d.byte[ 2 ] = rawData[ ( y * width + x ) * 16 + 2 ];
+                d.byte[ 3 ] = rawData[ ( y * width + x ) * 16 + 3 ];
+
+                float r = d.f;
+                r *= 256;
+                BYTE red = ( BYTE )( r >= 256 ? 255 : r );
+
+                d.byte[ 0 ] = rawData[ ( y * width + x ) * 16 + 4 ];
+                d.byte[ 1 ] = rawData[ ( y * width + x ) * 16 + 5 ];
+                d.byte[ 2 ] = rawData[ ( y * width + x ) * 16 + 6 ];
+                d.byte[ 3 ] = rawData[ ( y * width + x ) * 16 + 7 ];
+
+                float g = d.f;
+                g *= 256;
+                BYTE green = ( BYTE )( g >= 256 ? 255 : g );
+
+                d.byte[ 0 ] = rawData[ ( y * width + x ) * 16 + 8 ];
+                d.byte[ 1 ] = rawData[ ( y * width + x ) * 16 + 9 ];
+                d.byte[ 2 ] = rawData[ ( y * width + x ) * 16 + 10 ];
+                d.byte[ 3 ] = rawData[ ( y * width + x ) * 16 + 11 ];
+
+                float b = d.f;
+                b *= 256;
+                BYTE blue = ( BYTE )( b >= 256 ? 255 : b );
+
+                d.byte[ 0 ] = rawData[ ( y * width + x ) * 16 + 12 ];
+                d.byte[ 1 ] = rawData[ ( y * width + x ) * 16 + 13 ];
+                d.byte[ 2 ] = rawData[ ( y * width + x ) * 16 + 14 ];
+                d.byte[ 3 ] = rawData[ ( y * width + x ) * 16 + 15 ];
+
+                float a = d.f;
+                a *= 256;
+                BYTE alpha = ( BYTE )( a >= 256 ? 255 : a );
+
+                image[ y ][ x ] = png::basic_rgba_pixel(
+                        red, green, blue, alpha );
             }
         }
     }

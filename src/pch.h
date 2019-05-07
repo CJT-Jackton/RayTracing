@@ -91,6 +91,8 @@ namespace RayTracer {
 
     class Phong;
 
+    class PostProcess;
+
     class Primitive;
 
     class ProceduralTexture;
@@ -122,6 +124,12 @@ namespace RayTracer {
     class Texture2D;
 
     class TLAS;
+
+    class ToneMapping_ACESFilm;
+
+    class ToneMapping_Reinhard;
+
+    class ToneMapping_Ward;
 
     class Transform;
 
@@ -157,6 +165,9 @@ namespace RayTracer {
 #include "Shader/BlinnPhong.h"
 #include "Shader/Cook-Torrance.h"
 #include "Shader/Skybox-Procedural.h"
+#include "Shader/ToneMapping-ACESFilm.h"
+#include "Shader/ToneMapping-Reinhard.h"
+#include "Shader/ToneMapping-Ward.h"
 #include "Shader/Unlit.h"
 #include "Material.h"
 #include "Transform.h"
@@ -164,5 +175,6 @@ namespace RayTracer {
 #include "GameObject.h"
 #include "Camera.h"
 #include "Light.h"
+#include "PostProcess.h"
 
 #endif // PCH_H

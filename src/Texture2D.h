@@ -23,7 +23,8 @@ namespace RayTracer {
         enum TextureFormat {
             RGB24,
             RGBA32,
-            RFloat
+            RFloat,
+            RGBAFloat
         };
 
         /**

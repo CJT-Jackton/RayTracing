@@ -19,7 +19,7 @@ int main() {
 
     std::chrono::time_point scene_start = std::chrono::high_resolution_clock::now();
 
-    Screen::SetResolution( 800, 600 );
+    Screen::SetResolution( 1600, 1200 );
     Scene scene( "RayTracingScene" );
     scene.renderSettings.maxRayBounces = 4;
     scene.renderSettings.maxSampleRayNumber = 10;
@@ -51,7 +51,7 @@ int main() {
     std::shared_ptr< Material > M_Floor{ new Material( new Phong() ) };
     M_Floor->color = float4( 0.7f, 0.7f, 0.7f, 1.0f );
     M_Floor->mainTexture = ( Texture* ) checkerboard2D;
-    M_Floor->mainTextureScale = float2( 4.0f, 4.0f );
+    M_Floor->mainTextureScale = float2( 8.0f, 16.0f );
 
     renderer3->material = M_Floor;
 //    renderer3->GetMaterial()->color = float4( 0.7f, 0.7f, 0.7f, 1.0f );
@@ -70,13 +70,13 @@ int main() {
     std::unique_ptr< Triangle > t1 = std::make_unique< Triangle >();
     std::unique_ptr< Triangle > t2 = std::make_unique< Triangle >();
 
-//    t1->vertices[ 0 ] = float3( -5, 0, -10 );
-//    t1->vertices[ 1 ] = float3( 5, 0, -10 );
-//    t1->vertices[ 2 ] = float3( -5, 0, 10 );
+    t1->vertices[ 0 ] = float3( -5, 0, -10 );
+    t1->vertices[ 1 ] = float3( 5, 0, -10 );
+    t1->vertices[ 2 ] = float3( -5, 0, 10 );
 
-    t1->vertices[ 0 ] = float3( -1.25f, 0, -1.25f );
-    t1->vertices[ 1 ] = float3( 1.25f, 0, -1.25f );
-    t1->vertices[ 2 ] = float3( -1.25f, 0, 1.25f );
+//    t1->vertices[ 0 ] = float3( -1.25f, 0, -1.25f );
+//    t1->vertices[ 1 ] = float3( 1.25f, 0, -1.25f );
+//    t1->vertices[ 2 ] = float3( -1.25f, 0, 1.25f );
 
     t1->normals[ 0 ] = float3( 0, 1, 0 );
     t1->normals[ 1 ] = float3( 0, 1, 0 );
@@ -86,13 +86,13 @@ int main() {
     t1->uv[ 1 ] = float2( 1, 0 );
     t1->uv[ 2 ] = float2( 0, 1 );
 
-//    t2->vertices[ 0 ] = float3( -5, 0, 10 );
-//    t2->vertices[ 1 ] = float3( 5, 0, -10 );
-//    t2->vertices[ 2 ] = float3( 5, 0, 10 );
+    t2->vertices[ 0 ] = float3( -5, 0, 10 );
+    t2->vertices[ 1 ] = float3( 5, 0, -10 );
+    t2->vertices[ 2 ] = float3( 5, 0, 10 );
 
-    t2->vertices[ 0 ] = float3( -1.25f, 0, 1.25f );
-    t2->vertices[ 1 ] = float3( 1.25f, 0, -1.25f );
-    t2->vertices[ 2 ] = float3( 1.25f, 0, 1.25f );
+//    t2->vertices[ 0 ] = float3( -1.25f, 0, 1.25f );
+//    t2->vertices[ 1 ] = float3( 1.25f, 0, -1.25f );
+//    t2->vertices[ 2 ] = float3( 1.25f, 0, 1.25f );
 
     t2->normals[ 0 ] = float3( 0, 1, 0 );
     t2->normals[ 1 ] = float3( 0, 1, 0 );
@@ -108,19 +108,19 @@ int main() {
     GameObject sphere1 = GameObject( "Sphere 1" );
     sphere1.MoveToScene( scene );
 
-//    sphere1.GetComponent< Transform >()->Translate( -3.413f, 1.326f, -9.88f );
-    sphere1.GetComponent< Transform >()->Translate( -3.553f, 1.0f, -9.3f );
+    sphere1.GetComponent< Transform >()->Translate( -3.413f, 1.326f, -9.88f );
+//    sphere1.GetComponent< Transform >()->Translate( -3.553f, 1.0f, -9.3f );
     Renderer* renderer1 = sphere1.AddComponent< Renderer >();
 
     std::shared_ptr< Material > M_Sphere_Transparent{
             new Material( new Phong() ) };
     renderer1->material = M_Sphere_Transparent;
-//    renderer1->GetMaterial()->color = float4( 0.65f, 0.4f, 0.0f, 1.0f );
+    renderer1->GetMaterial()->color = float4( 0.65f, 0.4f, 0.0f, 0.1f );
     renderer1->GetMaterial()->UseShader( Shader::Cook_Torrance );
 
     Cook_Torrance* bshader1 = ( Cook_Torrance* ) renderer1->GetMaterial()->shader;
 //    bshader1->mainColor = float4( 0.65f, 0.4f, 0.0f, 0.1f );
-    bshader1->mainColor = float4( 1.0f, 1.0f, 1.0f, 1.0f );
+    bshader1->mainColor = float4( 1.0f, 1.0f, 1.0f, 0.1f );
 //    bshader1->shininess = 1.0f;
 //    bshader1->kd = 1.0f;
 //    bshader1->ks = 1.0f;
@@ -144,13 +144,12 @@ int main() {
 //    M_Sphere_Metal->color = float4( 0.1f, 0.6f, 0.21f, 1.0f );
     renderer2->material = M_Sphere_Metal;
 //    renderer2->GetMaterial()->color = float4( 0.1f, 0.6f, 0.21f, 1.0f );
-    renderer2->GetMaterial()->UseShader( Shader::Phong );
+    renderer2->GetMaterial()->UseShader( Shader::Cook_Torrance );
 
-    Phong* bshader2 = ( Phong* ) renderer2->GetMaterial()->shader;
-//    bshader2->mainColor = float4( 0.1f, 0.6f, 0.21f, 1.0f );
-    bshader2->shininess = 1.0f;
-    bshader2->kd = 1.0f;
-    bshader2->ks = 1.0f;
+    Cook_Torrance* cshader2 = ( Cook_Torrance* ) renderer2->GetMaterial()->shader;
+    cshader2->mainColor = float4( 1.0f, 1.0f, 1.0f, 1.0f );
+    cshader2->smoothness = 0.1f;
+    cshader2->metallic = 1.0f;
 
     renderer2->mesh = std::make_shared< Mesh >( Mesh() );
     renderer2->GetMesh()->renderer = renderer2;
@@ -189,9 +188,9 @@ int main() {
     cube.GetComponent< Transform >()->Rotate( 8.8f, -13.88f, 0.0f );
 
 //    floor.SetActive( false );
-    sphere1.SetActive( false );
-    sphere2.SetActive( false );
-//    sphere3.SetActive( false );
+//    sphere1.SetActive( false );
+//    sphere2.SetActive( false );
+    sphere3.SetActive( false );
     cube.SetActive( false );
 
     Renderer* renderer4 = cube.AddComponent< Renderer >();
@@ -215,15 +214,15 @@ int main() {
     GameObject dLight = GameObject( "Directional Light" );
     dLight.MoveToScene( scene );
 
-//    dLight.GetComponent< Transform >()->Rotate( 40.0f, 15.0f, 0.0f );
-    dLight.GetComponent< Transform >()->Rotate( 75.2f, -128.7f, 0.0f );
+    dLight.GetComponent< Transform >()->Rotate( 40.0f, 15.0f, 0.0f );
+//    dLight.GetComponent< Transform >()->Rotate( 75.2f, -128.7f, 0.0f );
 
     Light* light = dLight.AddComponent< Light >();
     light->type = Light::Directional;
 
 //    light->color = float4( 1.0f, 0.9568627f, 0.8392157f, 1.0f );
     light->color = float4( 1.0f, 1.0f, 1.0f, 1.0f );
-    light->intensity = 1.0f;
+    light->intensity = 2.0f;
     light->shadows = Light::LightShadows::Translucent;
 
     GameObject dLight2 = GameObject( "Directional Light" );
@@ -288,7 +287,7 @@ int main() {
 
     std::chrono::time_point render_start = std::chrono::high_resolution_clock::now();
 
-    Camera::main = Camera::allCameras[ 2 ];
+    Camera::main = Camera::allCameras[ 0 ];
     Camera::main->Render();
 
     std::chrono::time_point render_end = std::chrono::high_resolution_clock::now();
@@ -298,10 +297,19 @@ int main() {
     std::cout << "scene rendering:\t" << time.count() * 0.001 << "s"
               << std::endl;
 
-    Texture2D color = Texture2D( Screen::width, Screen::height );
+    PostProcess postProcess;
+    postProcess.activeTexture = &Camera::main->targetTexture;
+    postProcess.useToneMapping = true;
+    postProcess.toneMappingMode = PostProcess::Ward;
+
+    postProcess.CalculateLuminance();
+    postProcess.PostProcessing();
+
+    Texture2D color = Texture2D( Screen::width, Screen::height,
+                                 Texture2D::RGBAFloat );
     BYTE* ptr = Camera::main->targetTexture.colorBuffer.GetNativeRenderBufferPtr();
-    color.LoadRawTextureData(
-            ptr );
+
+    color.LoadRawTextureData( ptr );
     color.SaveTextureToPNG( scene.name + ".png" );
 
     delete ( tiger );

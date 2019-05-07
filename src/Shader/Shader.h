@@ -25,6 +25,9 @@ namespace RayTracer {
             Cook_Torrance,
             Phong,
             Skybox_Procedural,
+            ToneMapping_ACESFilm,
+            ToneMapping_Reinhard,
+            ToneMapping_Ward,
             Unlit
         };
 

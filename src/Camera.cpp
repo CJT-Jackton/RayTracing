@@ -383,7 +383,9 @@ float4 Camera::RenderRay( const Ray& ray,
                 cshader.lightPositon = light->gameObject->transform->positon;
                 cshader.lightColor = ( light->color * light->intensity ).rgb;
 
-                cshader.irradiance = reflection.xyz;
+                cshader.irradiance = reflection.rgb;
+//                cshader.reflect = reflection.rgb;
+//                cshader.transmit = refraction.rgb;
 
                 finalColor += cshader.Shading();
 //                finalColor +=
@@ -456,7 +458,7 @@ float4 Camera::RenderRay( const Ray& ray,
             // compute refraction only when needed
             if( transparency < 1.0f ) {
                 // the ratio of indices of refraction
-                float refractiveIndex = 1.125f;
+                float refractiveIndex = 1.025f;
 
                 // the ratio of indices of refraction
                 float eta;

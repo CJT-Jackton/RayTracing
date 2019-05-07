@@ -22,7 +22,7 @@ std::mutex write_mutex;
  */
 RenderTexture::RenderTexture( int w, int h ) :
         Texture{ w, h },
-        colorBuffer{ w * h * 4, 0 },
+        colorBuffer{ w * h * 16, 0 },
         depthBuffer{ w * h * 4, 0 } {
 }
 
@@ -35,20 +35,42 @@ RenderTexture::RenderTexture( int w, int h ) :
  * @return the color
  */
 float4 RenderTexture::ReadColorBuffer( int x, int y ) const {
-    int4 colori;
+    float4 color = float4( 0.0f );
 
     if( x >= 0 && x < width && y >= 0 && y < height ) {
         BYTE* colorBufferData = colorBuffer.GetNativeRenderBufferPtr();
+        floatBYTE c{};
 
-        colori = int4( colorBufferData[ 4 * ( y * width + x ) + 0 ],
-                       colorBufferData[ 4 * ( y * width + x ) + 1 ],
-                       colorBufferData[ 4 * ( y * width + x ) + 2 ],
-                       colorBufferData[ 4 * ( y * width + x ) + 3 ] );
+        // red channel
+        c.byte[ 0 ] = colorBufferData[ 16 * ( y * width + x ) + 0 ];
+        c.byte[ 1 ] = colorBufferData[ 16 * ( y * width + x ) + 1 ];
+        c.byte[ 2 ] = colorBufferData[ 16 * ( y * width + x ) + 2 ];
+        c.byte[ 3 ] = colorBufferData[ 16 * ( y * width + x ) + 3 ];
+        float red = c.f;
+
+        // green channel
+        c.byte[ 0 ] = colorBufferData[ 16 * ( y * width + x ) + 4 ];
+        c.byte[ 1 ] = colorBufferData[ 16 * ( y * width + x ) + 5 ];
+        c.byte[ 2 ] = colorBufferData[ 16 * ( y * width + x ) + 6 ];
+        c.byte[ 3 ] = colorBufferData[ 16 * ( y * width + x ) + 7 ];
+        float green = c.f;
+
+        // blue channel
+        c.byte[ 0 ] = colorBufferData[ 16 * ( y * width + x ) + 8 ];
+        c.byte[ 1 ] = colorBufferData[ 16 * ( y * width + x ) + 9 ];
+        c.byte[ 2 ] = colorBufferData[ 16 * ( y * width + x ) + 10 ];
+        c.byte[ 3 ] = colorBufferData[ 16 * ( y * width + x ) + 11 ];
+        float blue = c.f;
+
+        // alpha channel
+        c.byte[ 0 ] = colorBufferData[ 16 * ( y * width + x ) + 12 ];
+        c.byte[ 1 ] = colorBufferData[ 16 * ( y * width + x ) + 13 ];
+        c.byte[ 2 ] = colorBufferData[ 16 * ( y * width + x ) + 14 ];
+        c.byte[ 3 ] = colorBufferData[ 16 * ( y * width + x ) + 15 ];
+        float alpha = c.f;
+
+        color = float4( red, green, blue, alpha );
     }
-
-//    float4 color = float4( colori.r / 255.0f, colori.g / 255.0f,
-//                           colori.b / 255.0f, colori.a / 255.0f );
-    float4 color = float4( colori ) / float4( 255.0f );
 
     return color;
 }
@@ -107,29 +129,39 @@ int RenderTexture::ReadStencilBuffer( int x, int y ) const {
  */
 void RenderTexture::WriteColorBuffer( int x, int y, float4 color ) {
     if( x >= 0 && x < width && y >= 0 && y < height ) {
-//#if MULTI_THREAD
-//        std::lock_guard< std::mutex > lock_guard{ write_mutex };
-//#endif
-
-//        float4 c = float4( GammaCorrection( ACESFilm( color.rgb ), 2.2f ),
-//                           1.0f );
-//        float4 c = float4( ACESFilm( GammaCorrection( color.rgb, 2.2f ) ),
-//                           1.0f );
-//        float4 c = float4( GammaCorrection( color.rgb, 2.2f ), 1.0f );
-        float4 c = float4( ACESFilm( color.rgb ), 1.0f );
-        c *= 256.0f;
-
         BYTE* colorBufferData = colorBuffer.GetNativeRenderBufferPtr();
+        floatBYTE c{};
 
-        int r = ( c.r == 256.0f ) ? 255 : int( c.r );
-        int g = ( c.g == 256.0f ) ? 255 : int( c.g );
-        int b = ( c.b == 256.0f ) ? 255 : int( c.b );
-        int a = ( c.a == 256.0f ) ? 255 : int( c.a );
+        //float3 xc = ACESFilm( color.rgb );
+        //color = float4( xc.r, xc.g, xc.b, 1.0f );
 
-        colorBufferData[ 4 * ( y * width + x ) + 0 ] = ( BYTE ) r;
-        colorBufferData[ 4 * ( y * width + x ) + 1 ] = ( BYTE ) g;
-        colorBufferData[ 4 * ( y * width + x ) + 2 ] = ( BYTE ) b;
-        colorBufferData[ 4 * ( y * width + x ) + 3 ] = ( BYTE ) a;
+        // red channel
+        c.f = color.r;
+        colorBufferData[ 16 * ( y * width + x ) + 0 ] = c.byte[ 0 ];
+        colorBufferData[ 16 * ( y * width + x ) + 1 ] = c.byte[ 1 ];
+        colorBufferData[ 16 * ( y * width + x ) + 2 ] = c.byte[ 2 ];
+        colorBufferData[ 16 * ( y * width + x ) + 3 ] = c.byte[ 3 ];
+
+        // green channel
+        c.f = color.g;
+        colorBufferData[ 16 * ( y * width + x ) + 4 ] = c.byte[ 0 ];
+        colorBufferData[ 16 * ( y * width + x ) + 5 ] = c.byte[ 1 ];
+        colorBufferData[ 16 * ( y * width + x ) + 6 ] = c.byte[ 2 ];
+        colorBufferData[ 16 * ( y * width + x ) + 7 ] = c.byte[ 3 ];
+
+        // blue channel
+        c.f = color.b;
+        colorBufferData[ 16 * ( y * width + x ) + 8 ] = c.byte[ 0 ];
+        colorBufferData[ 16 * ( y * width + x ) + 9 ] = c.byte[ 1 ];
+        colorBufferData[ 16 * ( y * width + x ) + 10 ] = c.byte[ 2 ];
+        colorBufferData[ 16 * ( y * width + x ) + 11 ] = c.byte[ 3 ];
+
+        // alpha channel
+        c.f = color.a;
+        colorBufferData[ 16 * ( y * width + x ) + 12 ] = c.byte[ 0 ];
+        colorBufferData[ 16 * ( y * width + x ) + 13 ] = c.byte[ 1 ];
+        colorBufferData[ 16 * ( y * width + x ) + 14 ] = c.byte[ 2 ];
+        colorBufferData[ 16 * ( y * width + x ) + 15 ] = c.byte[ 3 ];
     }
 }
 
