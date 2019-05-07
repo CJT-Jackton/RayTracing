@@ -77,20 +77,19 @@ Side by side comparison.
 
 There are multiple ways to convert the HDR image into LDR space. However the ACES film tone mapping is the most widely accepted and used tone mapping algorithm.
 
-### ACES film tone mapping
+### Tone mapping
 
-```hlsl
-float3 ACESFilm( float3 x ) {
-    float a = 2.51f;
-    float b = 0.03f;
-    float c = 2.43f;
-    float d = 0.59f;
-    float e = 0.14f;
-    return saturate( ( x * ( a * x + b ) ) / ( x * ( c * x + d ) + e ) );
-}
-```
+#### None
+![None](https://raw.githubusercontent.com/CJT-Jackton/RayTracing/master/Screenshots/ToneMapping_None.png "No tone mapping")
 
-Code and coefficients are from [Krzysztof Narkowicz](https://knarkowicz.wordpress.com/2016/01/06/aces-filmic-tone-mapping-curve/).
+#### Reinhard
+![Reinhard](https://raw.githubusercontent.com/CJT-Jackton/RayTracing/master/Screenshots/ToneMapping_Reinhard.png "Reinhard tone mapping")
+
+#### Ward's
+![Ward](https://raw.githubusercontent.com/CJT-Jackton/RayTracing/master/Screenshots/ToneMapping_Ward.png "Ward's tone mapping")
+
+#### ACES Filmic
+![ACES](https://raw.githubusercontent.com/CJT-Jackton/RayTracing/master/Screenshots/ToneMapping_ACES.png "ACES filmic tone mapping")
 
 ## Author
 Jietong Chen
