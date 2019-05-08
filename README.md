@@ -89,5 +89,13 @@ There are multiple ways to convert the HDR image into LDR space. However the ACE
 ### ACES Filmic
 ![ACES](https://raw.githubusercontent.com/CJT-Jackton/RayTracing/master/Screenshots/ToneMapping_ACES.png "ACES filmic tone mapping")
 
+## Open Shading Language
+
+### Perlin Noise
+![Perlin Noise](https://raw.githubusercontent.com/CJT-Jackton/RayTracing/master/Screenshots/OSL_test1.png "Open Shading Language in Blender")
+
+### Beer's Law
+![Beer's Law](https://raw.githubusercontent.com/CJT-Jackton/RayTracing/master/Screenshots/OSL_test2.png "Open Shading Language in Blender")
+
 ## Author
 Jietong Chen
